@@ -1,0 +1,33 @@
+
+
+
+ffmpeg -y \
+  -i /Users/iqbal/Desktop/voice/intro.mp3 \
+  -vn -ac 1 -ar 16000 -c:a pcm_s16le \
+  /Users/iqbal/Desktop/voice/intro-normalized.wav
+
+
+
+  ./node_modules/nodejs-whisper/cpp/whisper.cpp/build/bin/whisper-cli \
+  -m node_modules/nodejs-whisper/cpp/whisper.cpp/models/ggml-small.en.bin \
+  -f /Users/iqbal/Desktop/voice/intro-normalized.wav \
+  -l en \
+  -ng \
+  -t 8 \
+  -bs 5 \
+  -bo 5 \
+  -tp 0
+
+
+
+
+
+  ./node_modules/nodejs-whisper/cpp/whisper.cpp/build/bin/whisper-cli \
+  -m node_modules/nodejs-whisper/cpp/whisper.cpp/models/ggml-small.en.bin \
+  -f /Users/iqbal/projects/reading/data/recordings/recording-2026-11-21T07-52-23-184Z.wav \
+  -l en \
+  -ng \
+  -t 8 \
+  -bs 5 \
+  -bo 5 \
+  -tp 0

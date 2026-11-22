@@ -1,0 +1,69 @@
+{
+  "items": [
+    {
+      "type": "Tongue Twister",
+      "short_name": "TT-1: /æ/ vs /ʌ/ & Final Clusters",
+      "text": "Six crisp trucks cross six thick tracks while six bright sparks drift past."
+    },
+    {
+      "type": "Tongue Twister",
+      "short_name": "TT-2: Rhotic Vowels & Endings",
+      "text": "Early learners merge three clear terms before they serve first."
+    },
+    {
+      "type": "Tongue Twister",
+      "short_name": "TT-3: /θ/ & /ð/ Contractions",
+      "text": "Thirty thoughtful travelers think those three paths won't bother them."
+    },
+    {
+      "type": "Reading Paragraph",
+      "short_name": "RP-1: Vowels & Final Clusters",
+      "text": "The delivery crew checked the tracks behind the warehouse before the trucks arrived. Several stacks of crates sat near the exit, and the team counted every package twice. Even when the schedule got tight, everyone stayed calm and kept the shipments moving on time."
+    },
+    {
+      "type": "Reading Paragraph",
+      "short_name": "RP-2: Rhotic Vowels & Endings",
+      "text": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when plans change unexpectedly. By the end of the session, everyone had practical notes they could apply right away."
+    },
+    {
+      "type": "Reading Paragraph",
+      "short_name": "RP-3: Dental Fricatives /θ/ & /ð/",
+      "text": "Thirty people gathered in the courtyard to talk about the things that matter most in daily life. Some shared stories about their families, while others spoke about the value of patience and honesty. Through every conversation, they listened closely and respected one another's point of view."
+    },
+    {
+      "type": "Reading Paragraph",
+      "short_name": "RP-4: Function Words & Pacing",
+      "text": "We don't always get the answers we expect on the first try, and that's completely normal. Sometimes a delay gives us room to rethink our priorities and choose a better path. When we slow down just a little, our message becomes much easier for others to follow."
+    },
+    {
+      "type": "Reading Paragraph",
+      "short_name": "RP-5: Multi-Syllable Clarity",
+      "text": "Independent learners often discover new interests when they explore unfamiliar topics with curiosity. Recording yourself reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday speech."
+    },
+    {
+      "type": "Groups of 20 Words",
+      "short_name": "WG-1: /æ/ vs /ʌ/ & Clusters",
+      "text": "track, tracks, truck, trucks, pack, puck, stack, stuck, cap, cup, cat, cut, bag, bug, match, much, past, must, fact, duct"
+    },
+    {
+      "type": "Groups of 20 Words",
+      "short_name": "WG-2: /ɪ/ vs /i/ & Mid Vowels",
+      "text": "pick, peak, fit, feat, sit, seat, fill, feel, bit, beat, slip, sleep, list, least, live, leave, get, gate, set, late"
+    },
+    {
+      "type": "Groups of 20 Words",
+      "short_name": "WG-3: Rhotics & /ɹ/ vs /l/",
+      "text": "emerge, immerse, order, water, fear, flare, right, light, road, load, read, lead, correct, collect, arrive, alive, work, walk, turn, learn"
+    },
+    {
+      "type": "Groups of 20 Words",
+      "short_name": "WG-4: Dental Fricatives /θ/ & /ð/",
+      "text": "think, thank, three, through, thing, things, thought, thirty, thousand, author, method, both, this, that, these, those, they, them, there, other"
+    },
+    {
+      "type": "Groups of 20 Words",
+      "short_name": "WG-5: Multi-Syllables & Endings",
+      "text": "variation, variations, example, examples, experience, experiences, lesson, lessons, mistake, mistakes, choice, choices, effort, efforts, traveler, travelers, important, independent, continue, understand"
+    }
+  ]
+}

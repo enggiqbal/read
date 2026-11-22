@@ -1,0 +1,6046 @@
+{
+  "version": 1,
+  "passages": [],
+  "sessions": [
+    {
+      "id": "eb8892f6-a53f-45d5-8d67-8983d1b5a283",
+      "createdAt": "2026-11-22T03:26:45.972Z",
+      "passageId": null,
+      "original": "variation, variations, example, examples, experience, experiences, lesson, lessons, mistake, mistakes, choice, choices, effort, efforts, traveler, travelers, important, independent, continue, understand",
+      "transcript": "Translation Variations Example Examples Experience Experiences Lesson Lessons Mistake Mistakes Soils Soises Efforts Traveler Travelers Important Independent Continue Understand",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 19,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "variation",
+            "transcript": "Translation"
+          },
+          {
+            "type": "substitution",
+            "original": "choices",
+            "transcript": "Soils"
+          },
+          {
+            "type": "substitution",
+            "original": "effort",
+            "transcript": "Soises"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "choice",
+            "transcript": null
+          }
+        ],
+        "insertions": [],
+        "errors": 4,
+        "ignoredInsertions": 0,
+        "matchPercentage": 80,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "variation",
+            "transcript": "Translation"
+          },
+          {
+            "type": "match",
+            "original": "variations",
+            "transcript": "Variations"
+          },
+          {
+            "type": "match",
+            "original": "example",
+            "transcript": "Example"
+          },
+          {
+            "type": "match",
+            "original": "examples",
+            "transcript": "Examples"
+          },
+          {
+            "type": "match",
+            "original": "experience",
+            "transcript": "Experience"
+          },
+          {
+            "type": "match",
+            "original": "experiences",
+            "transcript": "Experiences"
+          },
+          {
+            "type": "match",
+            "original": "lesson",
+            "transcript": "Lesson"
+          },
+          {
+            "type": "match",
+            "original": "lessons",
+            "transcript": "Lessons"
+          },
+          {
+            "type": "match",
+            "original": "mistake",
+            "transcript": "Mistake"
+          },
+          {
+            "type": "match",
+            "original": "mistakes",
+            "transcript": "Mistakes"
+          },
+          {
+            "type": "deletion",
+            "original": "choice",
+            "transcript": null
+          },
+          {
+            "type": "substitution",
+            "original": "choices",
+            "transcript": "Soils"
+          },
+          {
+            "type": "substitution",
+            "original": "effort",
+            "transcript": "Soises"
+          },
+          {
+            "type": "match",
+            "original": "efforts",
+            "transcript": "Efforts"
+          },
+          {
+            "type": "match",
+            "original": "traveler",
+            "transcript": "Traveler"
+          },
+          {
+            "type": "match",
+            "original": "travelers",
+            "transcript": "Travelers"
+          },
+          {
+            "type": "match",
+            "original": "important",
+            "transcript": "Important"
+          },
+          {
+            "type": "match",
+            "original": "independent",
+            "transcript": "Independent"
+          },
+          {
+            "type": "match",
+            "original": "continue",
+            "transcript": "Continue"
+          },
+          {
+            "type": "match",
+            "original": "understand",
+            "transcript": "Understand"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "fce70c96-a020-4527-b535-a0b583872562",
+      "createdAt": "2026-11-22T03:25:35.223Z",
+      "passageId": null,
+      "original": "variation, variations, example, examples, experience, experiences, lesson, lessons, mistake, mistakes, choice, choices, effort, efforts, traveler, travelers, important, independent, continue, understand",
+      "transcript": "Variations, examples, experience, lesson, mistakes, choices, efforts, travel, traveler, travelers, important, independent, continue, understand,",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 14,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "effort",
+            "transcript": "efforts"
+          },
+          {
+            "type": "substitution",
+            "original": "efforts",
+            "transcript": "travel"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "variation",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "example",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "experiences",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "lessons",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "mistake",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "choice",
+            "transcript": null
+          }
+        ],
+        "insertions": [],
+        "errors": 8,
+        "ignoredInsertions": 0,
+        "matchPercentage": 60,
+        "alignment": [
+          {
+            "type": "deletion",
+            "original": "variation",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "variations",
+            "transcript": "Variations"
+          },
+          {
+            "type": "deletion",
+            "original": "example",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "examples",
+            "transcript": "examples"
+          },
+          {
+            "type": "match",
+            "original": "experience",
+            "transcript": "experience"
+          },
+          {
+            "type": "deletion",
+            "original": "experiences",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "lesson",
+            "transcript": "lesson"
+          },
+          {
+            "type": "deletion",
+            "original": "lessons",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "mistake",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "mistakes",
+            "transcript": "mistakes"
+          },
+          {
+            "type": "deletion",
+            "original": "choice",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "choices",
+            "transcript": "choices"
+          },
+          {
+            "type": "substitution",
+            "original": "effort",
+            "transcript": "efforts"
+          },
+          {
+            "type": "substitution",
+            "original": "efforts",
+            "transcript": "travel"
+          },
+          {
+            "type": "match",
+            "original": "traveler",
+            "transcript": "traveler"
+          },
+          {
+            "type": "match",
+            "original": "travelers",
+            "transcript": "travelers"
+          },
+          {
+            "type": "match",
+            "original": "important",
+            "transcript": "important"
+          },
+          {
+            "type": "match",
+            "original": "independent",
+            "transcript": "independent"
+          },
+          {
+            "type": "match",
+            "original": "continue",
+            "transcript": "continue"
+          },
+          {
+            "type": "match",
+            "original": "understand",
+            "transcript": "understand"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "c5e7cce1-22e6-4f41-8048-f0c08447e673",
+      "createdAt": "2026-11-22T03:24:25.792Z",
+      "passageId": null,
+      "original": "think, thank, three, through, thing, things, thought, thirty, thousand, author, method, both, this, that, these, those, they, them, there, other",
+      "transcript": "Fink. Tank. Tea. Troll. Ting. Tings. Top. Trippy. Thousand. Mather. Mather. Both. This. That. These. Those. They. Them. Their. Other.",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 20,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "think",
+            "transcript": "Fink"
+          },
+          {
+            "type": "substitution",
+            "original": "thank",
+            "transcript": "Tank"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "Tea"
+          },
+          {
+            "type": "substitution",
+            "original": "through",
+            "transcript": "Troll"
+          },
+          {
+            "type": "substitution",
+            "original": "thing",
+            "transcript": "Ting"
+          },
+          {
+            "type": "substitution",
+            "original": "things",
+            "transcript": "Tings"
+          },
+          {
+            "type": "substitution",
+            "original": "thought",
+            "transcript": "Top"
+          },
+          {
+            "type": "substitution",
+            "original": "thirty",
+            "transcript": "Trippy"
+          },
+          {
+            "type": "substitution",
+            "original": "author",
+            "transcript": "Mather"
+          },
+          {
+            "type": "substitution",
+            "original": "method",
+            "transcript": "Mather"
+          },
+          {
+            "type": "substitution",
+            "original": "there",
+            "transcript": "Their"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 11,
+        "ignoredInsertions": 0,
+        "matchPercentage": 45,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "think",
+            "transcript": "Fink"
+          },
+          {
+            "type": "substitution",
+            "original": "thank",
+            "transcript": "Tank"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "Tea"
+          },
+          {
+            "type": "substitution",
+            "original": "through",
+            "transcript": "Troll"
+          },
+          {
+            "type": "substitution",
+            "original": "thing",
+            "transcript": "Ting"
+          },
+          {
+            "type": "substitution",
+            "original": "things",
+            "transcript": "Tings"
+          },
+          {
+            "type": "substitution",
+            "original": "thought",
+            "transcript": "Top"
+          },
+          {
+            "type": "substitution",
+            "original": "thirty",
+            "transcript": "Trippy"
+          },
+          {
+            "type": "match",
+            "original": "thousand",
+            "transcript": "Thousand"
+          },
+          {
+            "type": "substitution",
+            "original": "author",
+            "transcript": "Mather"
+          },
+          {
+            "type": "substitution",
+            "original": "method",
+            "transcript": "Mather"
+          },
+          {
+            "type": "match",
+            "original": "both",
+            "transcript": "Both"
+          },
+          {
+            "type": "match",
+            "original": "this",
+            "transcript": "This"
+          },
+          {
+            "type": "match",
+            "original": "that",
+            "transcript": "That"
+          },
+          {
+            "type": "match",
+            "original": "these",
+            "transcript": "These"
+          },
+          {
+            "type": "match",
+            "original": "those",
+            "transcript": "Those"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "They"
+          },
+          {
+            "type": "match",
+            "original": "them",
+            "transcript": "Them"
+          },
+          {
+            "type": "substitution",
+            "original": "there",
+            "transcript": "Their"
+          },
+          {
+            "type": "match",
+            "original": "other",
+            "transcript": "Other"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "3e5d146a-1c55-4aea-91b9-e45c8da96ff9",
+      "createdAt": "2026-11-22T03:23:17.510Z",
+      "passageId": null,
+      "original": "think, thank, three, through, thing, things, thought, thirty, thousand, author, method, both, this, that, these, those, they, them, there, other",
+      "transcript": "Ink tank. Tea troll. King tins. Tarti. Thousand other metal boat. These. That. These. Those. They. Them. Their. Other.",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 19,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "thank",
+            "transcript": "Ink"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "tank"
+          },
+          {
+            "type": "substitution",
+            "original": "through",
+            "transcript": "Tea"
+          },
+          {
+            "type": "substitution",
+            "original": "thing",
+            "transcript": "troll"
+          },
+          {
+            "type": "substitution",
+            "original": "things",
+            "transcript": "King"
+          },
+          {
+            "type": "substitution",
+            "original": "thought",
+            "transcript": "tins"
+          },
+          {
+            "type": "substitution",
+            "original": "thirty",
+            "transcript": "Tarti"
+          },
+          {
+            "type": "substitution",
+            "original": "author",
+            "transcript": "other"
+          },
+          {
+            "type": "substitution",
+            "original": "method",
+            "transcript": "metal"
+          },
+          {
+            "type": "substitution",
+            "original": "both",
+            "transcript": "boat"
+          },
+          {
+            "type": "substitution",
+            "original": "this",
+            "transcript": "These"
+          },
+          {
+            "type": "substitution",
+            "original": "there",
+            "transcript": "Their"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "think",
+            "transcript": null
+          }
+        ],
+        "insertions": [],
+        "errors": 13,
+        "ignoredInsertions": 0,
+        "matchPercentage": 35,
+        "alignment": [
+          {
+            "type": "deletion",
+            "original": "think",
+            "transcript": null
+          },
+          {
+            "type": "substitution",
+            "original": "thank",
+            "transcript": "Ink"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "tank"
+          },
+          {
+            "type": "substitution",
+            "original": "through",
+            "transcript": "Tea"
+          },
+          {
+            "type": "substitution",
+            "original": "thing",
+            "transcript": "troll"
+          },
+          {
+            "type": "substitution",
+            "original": "things",
+            "transcript": "King"
+          },
+          {
+            "type": "substitution",
+            "original": "thought",
+            "transcript": "tins"
+          },
+          {
+            "type": "substitution",
+            "original": "thirty",
+            "transcript": "Tarti"
+          },
+          {
+            "type": "match",
+            "original": "thousand",
+            "transcript": "Thousand"
+          },
+          {
+            "type": "substitution",
+            "original": "author",
+            "transcript": "other"
+          },
+          {
+            "type": "substitution",
+            "original": "method",
+            "transcript": "metal"
+          },
+          {
+            "type": "substitution",
+            "original": "both",
+            "transcript": "boat"
+          },
+          {
+            "type": "substitution",
+            "original": "this",
+            "transcript": "These"
+          },
+          {
+            "type": "match",
+            "original": "that",
+            "transcript": "That"
+          },
+          {
+            "type": "match",
+            "original": "these",
+            "transcript": "These"
+          },
+          {
+            "type": "match",
+            "original": "those",
+            "transcript": "Those"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "They"
+          },
+          {
+            "type": "match",
+            "original": "them",
+            "transcript": "Them"
+          },
+          {
+            "type": "substitution",
+            "original": "there",
+            "transcript": "Their"
+          },
+          {
+            "type": "match",
+            "original": "other",
+            "transcript": "Other"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "f7b36aaf-1460-418d-ba78-838e4f048c30",
+      "createdAt": "2026-11-22T03:22:02.899Z",
+      "passageId": null,
+      "original": "emerge, immerse, order, water, fear, flare, right, light, road, load, read, lead, correct, collect, arrive, alive, work, walk, turn, learn",
+      "transcript": "In Mars. In Mars. Order. Water. Here. Flat. Right. Light. Road. Load. Read. Lead. Correct. Collect. Arrive. Alive. Work. Walk. Turn. Learn.",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 22,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "emerge",
+            "transcript": "In"
+          },
+          {
+            "type": "substitution",
+            "original": "immerse",
+            "transcript": "Mars"
+          },
+          {
+            "type": "substitution",
+            "original": "fear",
+            "transcript": "Here"
+          },
+          {
+            "type": "substitution",
+            "original": "flare",
+            "transcript": "Flat"
+          }
+        ],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "In"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Mars"
+          }
+        ],
+        "errors": 4,
+        "ignoredInsertions": 2,
+        "matchPercentage": 80,
+        "alignment": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "In"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Mars"
+          },
+          {
+            "type": "substitution",
+            "original": "emerge",
+            "transcript": "In"
+          },
+          {
+            "type": "substitution",
+            "original": "immerse",
+            "transcript": "Mars"
+          },
+          {
+            "type": "match",
+            "original": "order",
+            "transcript": "Order"
+          },
+          {
+            "type": "match",
+            "original": "water",
+            "transcript": "Water"
+          },
+          {
+            "type": "substitution",
+            "original": "fear",
+            "transcript": "Here"
+          },
+          {
+            "type": "substitution",
+            "original": "flare",
+            "transcript": "Flat"
+          },
+          {
+            "type": "match",
+            "original": "right",
+            "transcript": "Right"
+          },
+          {
+            "type": "match",
+            "original": "light",
+            "transcript": "Light"
+          },
+          {
+            "type": "match",
+            "original": "road",
+            "transcript": "Road"
+          },
+          {
+            "type": "match",
+            "original": "load",
+            "transcript": "Load"
+          },
+          {
+            "type": "match",
+            "original": "read",
+            "transcript": "Read"
+          },
+          {
+            "type": "match",
+            "original": "lead",
+            "transcript": "Lead"
+          },
+          {
+            "type": "match",
+            "original": "correct",
+            "transcript": "Correct"
+          },
+          {
+            "type": "match",
+            "original": "collect",
+            "transcript": "Collect"
+          },
+          {
+            "type": "match",
+            "original": "arrive",
+            "transcript": "Arrive"
+          },
+          {
+            "type": "match",
+            "original": "alive",
+            "transcript": "Alive"
+          },
+          {
+            "type": "match",
+            "original": "work",
+            "transcript": "Work"
+          },
+          {
+            "type": "match",
+            "original": "walk",
+            "transcript": "Walk"
+          },
+          {
+            "type": "match",
+            "original": "turn",
+            "transcript": "Turn"
+          },
+          {
+            "type": "match",
+            "original": "learn",
+            "transcript": "Learn"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "86951d67-1816-4e98-9d0a-0d9646ed7422",
+      "createdAt": "2026-11-22T03:20:29.055Z",
+      "passageId": null,
+      "original": "emerge, immerse, order, water, fear, flare, right, light, road, load, read, lead, correct, collect, arrive, alive, work, walk, turn, learn",
+      "transcript": "Embers. Embers. Order. Water. Fear. Flyer. Stay. Alive. Work. Walk. Turn. Learn.",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 12,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "emerge",
+            "transcript": "Embers"
+          },
+          {
+            "type": "substitution",
+            "original": "immerse",
+            "transcript": "Embers"
+          },
+          {
+            "type": "substitution",
+            "original": "collect",
+            "transcript": "Flyer"
+          },
+          {
+            "type": "substitution",
+            "original": "arrive",
+            "transcript": "Stay"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "flare",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "right",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "light",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "road",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "load",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "read",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "lead",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "correct",
+            "transcript": null
+          }
+        ],
+        "insertions": [],
+        "errors": 12,
+        "ignoredInsertions": 0,
+        "matchPercentage": 40,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "emerge",
+            "transcript": "Embers"
+          },
+          {
+            "type": "substitution",
+            "original": "immerse",
+            "transcript": "Embers"
+          },
+          {
+            "type": "match",
+            "original": "order",
+            "transcript": "Order"
+          },
+          {
+            "type": "match",
+            "original": "water",
+            "transcript": "Water"
+          },
+          {
+            "type": "match",
+            "original": "fear",
+            "transcript": "Fear"
+          },
+          {
+            "type": "deletion",
+            "original": "flare",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "right",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "light",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "road",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "load",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "read",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "lead",
+            "transcript": null
+          },
+          {
+            "type": "deletion",
+            "original": "correct",
+            "transcript": null
+          },
+          {
+            "type": "substitution",
+            "original": "collect",
+            "transcript": "Flyer"
+          },
+          {
+            "type": "substitution",
+            "original": "arrive",
+            "transcript": "Stay"
+          },
+          {
+            "type": "match",
+            "original": "alive",
+            "transcript": "Alive"
+          },
+          {
+            "type": "match",
+            "original": "work",
+            "transcript": "Work"
+          },
+          {
+            "type": "match",
+            "original": "walk",
+            "transcript": "Walk"
+          },
+          {
+            "type": "match",
+            "original": "turn",
+            "transcript": "Turn"
+          },
+          {
+            "type": "match",
+            "original": "learn",
+            "transcript": "Learn"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "0497256a-78b8-4ff2-8407-b5dcfbc34c78",
+      "createdAt": "2026-11-22T03:19:15.854Z",
+      "passageId": null,
+      "original": "pick, peak, fit, feat, sit, seat, fill, feel, bit, beat, slip, sleep, list, least, live, leave, get, gate, set, late",
+      "transcript": "Peak, peak, pit, feet, seat, seat, feel, feel, beat, beat, sleep, sleep, least, least, leave, get, get, sit, late,",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 19,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "fit",
+            "transcript": "peak"
+          },
+          {
+            "type": "substitution",
+            "original": "feat",
+            "transcript": "pit"
+          },
+          {
+            "type": "substitution",
+            "original": "sit",
+            "transcript": "feet"
+          },
+          {
+            "type": "substitution",
+            "original": "fill",
+            "transcript": "seat"
+          },
+          {
+            "type": "substitution",
+            "original": "bit",
+            "transcript": "feel"
+          },
+          {
+            "type": "substitution",
+            "original": "slip",
+            "transcript": "beat"
+          },
+          {
+            "type": "substitution",
+            "original": "list",
+            "transcript": "sleep"
+          },
+          {
+            "type": "substitution",
+            "original": "live",
+            "transcript": "least"
+          },
+          {
+            "type": "substitution",
+            "original": "gate",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "set",
+            "transcript": "sit"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "pick",
+            "transcript": null
+          }
+        ],
+        "insertions": [],
+        "errors": 11,
+        "ignoredInsertions": 0,
+        "matchPercentage": 45,
+        "alignment": [
+          {
+            "type": "deletion",
+            "original": "pick",
+            "transcript": null
+          },
+          {
+            "type": "match",
+            "original": "peak",
+            "transcript": "Peak"
+          },
+          {
+            "type": "substitution",
+            "original": "fit",
+            "transcript": "peak"
+          },
+          {
+            "type": "substitution",
+            "original": "feat",
+            "transcript": "pit"
+          },
+          {
+            "type": "substitution",
+            "original": "sit",
+            "transcript": "feet"
+          },
+          {
+            "type": "match",
+            "original": "seat",
+            "transcript": "seat"
+          },
+          {
+            "type": "substitution",
+            "original": "fill",
+            "transcript": "seat"
+          },
+          {
+            "type": "match",
+            "original": "feel",
+            "transcript": "feel"
+          },
+          {
+            "type": "substitution",
+            "original": "bit",
+            "transcript": "feel"
+          },
+          {
+            "type": "match",
+            "original": "beat",
+            "transcript": "beat"
+          },
+          {
+            "type": "substitution",
+            "original": "slip",
+            "transcript": "beat"
+          },
+          {
+            "type": "match",
+            "original": "sleep",
+            "transcript": "sleep"
+          },
+          {
+            "type": "substitution",
+            "original": "list",
+            "transcript": "sleep"
+          },
+          {
+            "type": "match",
+            "original": "least",
+            "transcript": "least"
+          },
+          {
+            "type": "substitution",
+            "original": "live",
+            "transcript": "least"
+          },
+          {
+            "type": "match",
+            "original": "leave",
+            "transcript": "leave"
+          },
+          {
+            "type": "match",
+            "original": "get",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "gate",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "set",
+            "transcript": "sit"
+          },
+          {
+            "type": "match",
+            "original": "late",
+            "transcript": "late"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "d8d186c2-2b1d-4d18-98fe-e89441ffcdba",
+      "createdAt": "2026-11-22T03:18:06.129Z",
+      "passageId": null,
+      "original": "pick, peak, fit, feat, sit, seat, fill, feel, bit, beat, slip, sleep, list, least, live, leave, get, gate, set, late",
+      "transcript": "Eat, peak, feet, feet, seat, seat, feel, feel, beat, beat, sleep, sleep. List, least, live, leave, get, gate, see, set, let,",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 21,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "pick",
+            "transcript": "Eat"
+          },
+          {
+            "type": "substitution",
+            "original": "fit",
+            "transcript": "feet"
+          },
+          {
+            "type": "substitution",
+            "original": "feat",
+            "transcript": "feet"
+          },
+          {
+            "type": "substitution",
+            "original": "sit",
+            "transcript": "seat"
+          },
+          {
+            "type": "substitution",
+            "original": "fill",
+            "transcript": "feel"
+          },
+          {
+            "type": "substitution",
+            "original": "bit",
+            "transcript": "beat"
+          },
+          {
+            "type": "substitution",
+            "original": "slip",
+            "transcript": "sleep"
+          },
+          {
+            "type": "substitution",
+            "original": "late",
+            "transcript": "let"
+          }
+        ],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "see"
+          }
+        ],
+        "errors": 8,
+        "ignoredInsertions": 1,
+        "matchPercentage": 60,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "pick",
+            "transcript": "Eat"
+          },
+          {
+            "type": "match",
+            "original": "peak",
+            "transcript": "peak"
+          },
+          {
+            "type": "substitution",
+            "original": "fit",
+            "transcript": "feet"
+          },
+          {
+            "type": "substitution",
+            "original": "feat",
+            "transcript": "feet"
+          },
+          {
+            "type": "substitution",
+            "original": "sit",
+            "transcript": "seat"
+          },
+          {
+            "type": "match",
+            "original": "seat",
+            "transcript": "seat"
+          },
+          {
+            "type": "substitution",
+            "original": "fill",
+            "transcript": "feel"
+          },
+          {
+            "type": "match",
+            "original": "feel",
+            "transcript": "feel"
+          },
+          {
+            "type": "substitution",
+            "original": "bit",
+            "transcript": "beat"
+          },
+          {
+            "type": "match",
+            "original": "beat",
+            "transcript": "beat"
+          },
+          {
+            "type": "substitution",
+            "original": "slip",
+            "transcript": "sleep"
+          },
+          {
+            "type": "match",
+            "original": "sleep",
+            "transcript": "sleep"
+          },
+          {
+            "type": "match",
+            "original": "list",
+            "transcript": "List"
+          },
+          {
+            "type": "match",
+            "original": "least",
+            "transcript": "least"
+          },
+          {
+            "type": "match",
+            "original": "live",
+            "transcript": "live"
+          },
+          {
+            "type": "match",
+            "original": "leave",
+            "transcript": "leave"
+          },
+          {
+            "type": "match",
+            "original": "get",
+            "transcript": "get"
+          },
+          {
+            "type": "match",
+            "original": "gate",
+            "transcript": "gate"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "see"
+          },
+          {
+            "type": "match",
+            "original": "set",
+            "transcript": "set"
+          },
+          {
+            "type": "substitution",
+            "original": "late",
+            "transcript": "let"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "db63060f-83d2-4f07-b25b-71b207925ab7",
+      "createdAt": "2026-11-22T03:16:29.808Z",
+      "passageId": null,
+      "original": "track, tracks, truck, trucks, pack, puck, stack, stuck, cap, cup, cat, cut, bag, bug, match, much, past, must, fact, duct",
+      "transcript": "Truck, tracks, truck, trucks, pack, park, stick, stock, cap, cup, cat, cart, bag, bug, mess, mask, fast, must, pet, duck,",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 20,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "track",
+            "transcript": "Truck"
+          },
+          {
+            "type": "substitution",
+            "original": "puck",
+            "transcript": "park"
+          },
+          {
+            "type": "substitution",
+            "original": "stack",
+            "transcript": "stick"
+          },
+          {
+            "type": "substitution",
+            "original": "stuck",
+            "transcript": "stock"
+          },
+          {
+            "type": "substitution",
+            "original": "cut",
+            "transcript": "cart"
+          },
+          {
+            "type": "substitution",
+            "original": "match",
+            "transcript": "mess"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "mask"
+          },
+          {
+            "type": "substitution",
+            "original": "past",
+            "transcript": "fast"
+          },
+          {
+            "type": "substitution",
+            "original": "fact",
+            "transcript": "pet"
+          },
+          {
+            "type": "substitution",
+            "original": "duct",
+            "transcript": "duck"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 10,
+        "ignoredInsertions": 0,
+        "matchPercentage": 50,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "track",
+            "transcript": "Truck"
+          },
+          {
+            "type": "match",
+            "original": "tracks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "truck",
+            "transcript": "truck"
+          },
+          {
+            "type": "match",
+            "original": "trucks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "match",
+            "original": "pack",
+            "transcript": "pack"
+          },
+          {
+            "type": "substitution",
+            "original": "puck",
+            "transcript": "park"
+          },
+          {
+            "type": "substitution",
+            "original": "stack",
+            "transcript": "stick"
+          },
+          {
+            "type": "substitution",
+            "original": "stuck",
+            "transcript": "stock"
+          },
+          {
+            "type": "match",
+            "original": "cap",
+            "transcript": "cap"
+          },
+          {
+            "type": "match",
+            "original": "cup",
+            "transcript": "cup"
+          },
+          {
+            "type": "match",
+            "original": "cat",
+            "transcript": "cat"
+          },
+          {
+            "type": "substitution",
+            "original": "cut",
+            "transcript": "cart"
+          },
+          {
+            "type": "match",
+            "original": "bag",
+            "transcript": "bag"
+          },
+          {
+            "type": "match",
+            "original": "bug",
+            "transcript": "bug"
+          },
+          {
+            "type": "substitution",
+            "original": "match",
+            "transcript": "mess"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "mask"
+          },
+          {
+            "type": "substitution",
+            "original": "past",
+            "transcript": "fast"
+          },
+          {
+            "type": "match",
+            "original": "must",
+            "transcript": "must"
+          },
+          {
+            "type": "substitution",
+            "original": "fact",
+            "transcript": "pet"
+          },
+          {
+            "type": "substitution",
+            "original": "duct",
+            "transcript": "duck"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "5afef770-af63-4aff-97d2-0b065e4d6fab",
+      "createdAt": "2026-11-22T03:15:04.641Z",
+      "passageId": null,
+      "original": "track, tracks, truck, trucks, pack, puck, stack, stuck, cap, cup, cat, cut, bag, bug, match, much, past, must, fact, duct",
+      "transcript": "tracks, track, proc, tracks, back, puck, stack, stock, get, cop, get, cop, bag, bog, mask, must, bust, must, fact, duct,",
+      "comparison": {
+        "originalWordCount": 20,
+        "transcriptWordCount": 20,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "track",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "track"
+          },
+          {
+            "type": "substitution",
+            "original": "truck",
+            "transcript": "proc"
+          },
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "pack",
+            "transcript": "back"
+          },
+          {
+            "type": "substitution",
+            "original": "stuck",
+            "transcript": "stock"
+          },
+          {
+            "type": "substitution",
+            "original": "cap",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "cup",
+            "transcript": "cop"
+          },
+          {
+            "type": "substitution",
+            "original": "cat",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "cut",
+            "transcript": "cop"
+          },
+          {
+            "type": "substitution",
+            "original": "bug",
+            "transcript": "bog"
+          },
+          {
+            "type": "substitution",
+            "original": "match",
+            "transcript": "mask"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "must"
+          },
+          {
+            "type": "substitution",
+            "original": "past",
+            "transcript": "bust"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 14,
+        "ignoredInsertions": 0,
+        "matchPercentage": 30,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "track",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "track"
+          },
+          {
+            "type": "substitution",
+            "original": "truck",
+            "transcript": "proc"
+          },
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "pack",
+            "transcript": "back"
+          },
+          {
+            "type": "match",
+            "original": "puck",
+            "transcript": "puck"
+          },
+          {
+            "type": "match",
+            "original": "stack",
+            "transcript": "stack"
+          },
+          {
+            "type": "substitution",
+            "original": "stuck",
+            "transcript": "stock"
+          },
+          {
+            "type": "substitution",
+            "original": "cap",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "cup",
+            "transcript": "cop"
+          },
+          {
+            "type": "substitution",
+            "original": "cat",
+            "transcript": "get"
+          },
+          {
+            "type": "substitution",
+            "original": "cut",
+            "transcript": "cop"
+          },
+          {
+            "type": "match",
+            "original": "bag",
+            "transcript": "bag"
+          },
+          {
+            "type": "substitution",
+            "original": "bug",
+            "transcript": "bog"
+          },
+          {
+            "type": "substitution",
+            "original": "match",
+            "transcript": "mask"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "must"
+          },
+          {
+            "type": "substitution",
+            "original": "past",
+            "transcript": "bust"
+          },
+          {
+            "type": "match",
+            "original": "must",
+            "transcript": "must"
+          },
+          {
+            "type": "match",
+            "original": "fact",
+            "transcript": "fact"
+          },
+          {
+            "type": "match",
+            "original": "duct",
+            "transcript": "duct"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "b49c0dae-6c7f-42b5-aceb-e5fee0179e07",
+      "createdAt": "2026-11-22T03:13:46.712Z",
+      "passageId": null,
+      "original": "Independent learners often discover new interests when they explore unfamiliar topics with curiosity. Recording yourself reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday speech.",
+      "transcript": "Independent learners often discover new interest when they explore unfamiliar topic with curiosity. Recording yourself reading a short passage makes it easier to notice when you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday space.",
+      "comparison": {
+        "originalWordCount": 43,
+        "transcriptWordCount": 43,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "substitution",
+            "original": "where",
+            "transcript": "when"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 4,
+        "ignoredInsertions": 0,
+        "matchPercentage": 90.7,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Independent",
+            "transcript": "Independent"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "match",
+            "original": "often",
+            "transcript": "often"
+          },
+          {
+            "type": "match",
+            "original": "discover",
+            "transcript": "discover"
+          },
+          {
+            "type": "match",
+            "original": "new",
+            "transcript": "new"
+          },
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "explore",
+            "transcript": "explore"
+          },
+          {
+            "type": "match",
+            "original": "unfamiliar",
+            "transcript": "unfamiliar"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "match",
+            "original": "with",
+            "transcript": "with"
+          },
+          {
+            "type": "match",
+            "original": "curiosity",
+            "transcript": "curiosity"
+          },
+          {
+            "type": "match",
+            "original": "Recording",
+            "transcript": "Recording"
+          },
+          {
+            "type": "match",
+            "original": "yourself",
+            "transcript": "yourself"
+          },
+          {
+            "type": "match",
+            "original": "reading",
+            "transcript": "reading"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "short",
+            "transcript": "short"
+          },
+          {
+            "type": "match",
+            "original": "passage",
+            "transcript": "passage"
+          },
+          {
+            "type": "match",
+            "original": "makes",
+            "transcript": "makes"
+          },
+          {
+            "type": "match",
+            "original": "it",
+            "transcript": "it"
+          },
+          {
+            "type": "match",
+            "original": "easier",
+            "transcript": "easier"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "notice",
+            "transcript": "notice"
+          },
+          {
+            "type": "substitution",
+            "original": "where",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "you",
+            "transcript": "you"
+          },
+          {
+            "type": "match",
+            "original": "rush",
+            "transcript": "rush"
+          },
+          {
+            "type": "match",
+            "original": "or",
+            "transcript": "or"
+          },
+          {
+            "type": "match",
+            "original": "drop",
+            "transcript": "drop"
+          },
+          {
+            "type": "match",
+            "original": "an",
+            "transcript": "an"
+          },
+          {
+            "type": "match",
+            "original": "ending",
+            "transcript": "ending"
+          },
+          {
+            "type": "match",
+            "original": "Consistent",
+            "transcript": "Consistent"
+          },
+          {
+            "type": "match",
+            "original": "practice",
+            "transcript": "practice"
+          },
+          {
+            "type": "match",
+            "original": "over",
+            "transcript": "over"
+          },
+          {
+            "type": "match",
+            "original": "several",
+            "transcript": "several"
+          },
+          {
+            "type": "match",
+            "original": "weeks",
+            "transcript": "weeks"
+          },
+          {
+            "type": "match",
+            "original": "builds",
+            "transcript": "builds"
+          },
+          {
+            "type": "match",
+            "original": "confidence",
+            "transcript": "confidence"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "clarity",
+            "transcript": "clarity"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "everyday",
+            "transcript": "everyday"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "37c65921-a851-48a1-a3f2-0b271c90a2e7",
+      "createdAt": "2026-11-22T03:13:31.065Z",
+      "passageId": null,
+      "original": "Independent learners often discover new interests when they explore unfamiliar topics with curiosity. Recording yourself reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday speech.",
+      "transcript": "Independent learners often discover new interest when they explore unfamiliar topic with curiosity. Reading itself, recording yourself, reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday space.",
+      "comparison": {
+        "originalWordCount": 43,
+        "transcriptWordCount": 45,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Reading"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "itself"
+          }
+        ],
+        "errors": 3,
+        "ignoredInsertions": 2,
+        "matchPercentage": 93,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Independent",
+            "transcript": "Independent"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "match",
+            "original": "often",
+            "transcript": "often"
+          },
+          {
+            "type": "match",
+            "original": "discover",
+            "transcript": "discover"
+          },
+          {
+            "type": "match",
+            "original": "new",
+            "transcript": "new"
+          },
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "explore",
+            "transcript": "explore"
+          },
+          {
+            "type": "match",
+            "original": "unfamiliar",
+            "transcript": "unfamiliar"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "match",
+            "original": "with",
+            "transcript": "with"
+          },
+          {
+            "type": "match",
+            "original": "curiosity",
+            "transcript": "curiosity"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Reading"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "itself"
+          },
+          {
+            "type": "match",
+            "original": "Recording",
+            "transcript": "recording"
+          },
+          {
+            "type": "match",
+            "original": "yourself",
+            "transcript": "yourself"
+          },
+          {
+            "type": "match",
+            "original": "reading",
+            "transcript": "reading"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "short",
+            "transcript": "short"
+          },
+          {
+            "type": "match",
+            "original": "passage",
+            "transcript": "passage"
+          },
+          {
+            "type": "match",
+            "original": "makes",
+            "transcript": "makes"
+          },
+          {
+            "type": "match",
+            "original": "it",
+            "transcript": "it"
+          },
+          {
+            "type": "match",
+            "original": "easier",
+            "transcript": "easier"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "notice",
+            "transcript": "notice"
+          },
+          {
+            "type": "match",
+            "original": "where",
+            "transcript": "where"
+          },
+          {
+            "type": "match",
+            "original": "you",
+            "transcript": "you"
+          },
+          {
+            "type": "match",
+            "original": "rush",
+            "transcript": "rush"
+          },
+          {
+            "type": "match",
+            "original": "or",
+            "transcript": "or"
+          },
+          {
+            "type": "match",
+            "original": "drop",
+            "transcript": "drop"
+          },
+          {
+            "type": "match",
+            "original": "an",
+            "transcript": "an"
+          },
+          {
+            "type": "match",
+            "original": "ending",
+            "transcript": "ending"
+          },
+          {
+            "type": "match",
+            "original": "Consistent",
+            "transcript": "Consistent"
+          },
+          {
+            "type": "match",
+            "original": "practice",
+            "transcript": "practice"
+          },
+          {
+            "type": "match",
+            "original": "over",
+            "transcript": "over"
+          },
+          {
+            "type": "match",
+            "original": "several",
+            "transcript": "several"
+          },
+          {
+            "type": "match",
+            "original": "weeks",
+            "transcript": "weeks"
+          },
+          {
+            "type": "match",
+            "original": "builds",
+            "transcript": "builds"
+          },
+          {
+            "type": "match",
+            "original": "confidence",
+            "transcript": "confidence"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "clarity",
+            "transcript": "clarity"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "everyday",
+            "transcript": "everyday"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "4aaf8f31-61ff-4ea2-bd30-80a170363e9d",
+      "createdAt": "2026-11-22T03:12:41.933Z",
+      "passageId": null,
+      "original": "Independent learners often discover new interests when they explore unfamiliar topics with curiosity. Recording yourself reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday speech.",
+      "transcript": "Independent learners often discover new interest when they explore unfamiliar topic with curiosity. Reading itself, recording yourself, reading a short passage makes it easier to notice where you rush or drop an ending. Consistent practice over several weeks builds confidence and clarity in everyday space.",
+      "comparison": {
+        "originalWordCount": 43,
+        "transcriptWordCount": 45,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Reading"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "itself"
+          }
+        ],
+        "errors": 3,
+        "ignoredInsertions": 2,
+        "matchPercentage": 93,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Independent",
+            "transcript": "Independent"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "match",
+            "original": "often",
+            "transcript": "often"
+          },
+          {
+            "type": "match",
+            "original": "discover",
+            "transcript": "discover"
+          },
+          {
+            "type": "match",
+            "original": "new",
+            "transcript": "new"
+          },
+          {
+            "type": "substitution",
+            "original": "interests",
+            "transcript": "interest"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "explore",
+            "transcript": "explore"
+          },
+          {
+            "type": "match",
+            "original": "unfamiliar",
+            "transcript": "unfamiliar"
+          },
+          {
+            "type": "substitution",
+            "original": "topics",
+            "transcript": "topic"
+          },
+          {
+            "type": "match",
+            "original": "with",
+            "transcript": "with"
+          },
+          {
+            "type": "match",
+            "original": "curiosity",
+            "transcript": "curiosity"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "Reading"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "itself"
+          },
+          {
+            "type": "match",
+            "original": "Recording",
+            "transcript": "recording"
+          },
+          {
+            "type": "match",
+            "original": "yourself",
+            "transcript": "yourself"
+          },
+          {
+            "type": "match",
+            "original": "reading",
+            "transcript": "reading"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "short",
+            "transcript": "short"
+          },
+          {
+            "type": "match",
+            "original": "passage",
+            "transcript": "passage"
+          },
+          {
+            "type": "match",
+            "original": "makes",
+            "transcript": "makes"
+          },
+          {
+            "type": "match",
+            "original": "it",
+            "transcript": "it"
+          },
+          {
+            "type": "match",
+            "original": "easier",
+            "transcript": "easier"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "notice",
+            "transcript": "notice"
+          },
+          {
+            "type": "match",
+            "original": "where",
+            "transcript": "where"
+          },
+          {
+            "type": "match",
+            "original": "you",
+            "transcript": "you"
+          },
+          {
+            "type": "match",
+            "original": "rush",
+            "transcript": "rush"
+          },
+          {
+            "type": "match",
+            "original": "or",
+            "transcript": "or"
+          },
+          {
+            "type": "match",
+            "original": "drop",
+            "transcript": "drop"
+          },
+          {
+            "type": "match",
+            "original": "an",
+            "transcript": "an"
+          },
+          {
+            "type": "match",
+            "original": "ending",
+            "transcript": "ending"
+          },
+          {
+            "type": "match",
+            "original": "Consistent",
+            "transcript": "Consistent"
+          },
+          {
+            "type": "match",
+            "original": "practice",
+            "transcript": "practice"
+          },
+          {
+            "type": "match",
+            "original": "over",
+            "transcript": "over"
+          },
+          {
+            "type": "match",
+            "original": "several",
+            "transcript": "several"
+          },
+          {
+            "type": "match",
+            "original": "weeks",
+            "transcript": "weeks"
+          },
+          {
+            "type": "match",
+            "original": "builds",
+            "transcript": "builds"
+          },
+          {
+            "type": "match",
+            "original": "confidence",
+            "transcript": "confidence"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "clarity",
+            "transcript": "clarity"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "everyday",
+            "transcript": "everyday"
+          },
+          {
+            "type": "substitution",
+            "original": "speech",
+            "transcript": "space"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "6a31ed10-dd01-4398-a483-e3a1327036af",
+      "createdAt": "2026-11-22T03:11:36.445Z",
+      "passageId": null,
+      "original": "We don't always get the answers we expect on the first try, and that's completely normal. Sometimes a delay gives us room to rethink our priorities and choose a better path. When we slow down just a little, our message becomes much easier for others to follow.",
+      "transcript": "We don't always get the answers we expect on the first try. And that's completely normal. Sometimes a delay gives us room to rethink our priorities and choose a better path. When we slow down just a little, our message becomes It's much easier for others to follow.",
+      "comparison": {
+        "originalWordCount": 47,
+        "transcriptWordCount": 48,
+        "substitutions": [],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "It's"
+          }
+        ],
+        "errors": 0,
+        "ignoredInsertions": 1,
+        "matchPercentage": 100,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "We",
+            "transcript": "We"
+          },
+          {
+            "type": "match",
+            "original": "don't",
+            "transcript": "don't"
+          },
+          {
+            "type": "match",
+            "original": "always",
+            "transcript": "always"
+          },
+          {
+            "type": "match",
+            "original": "get",
+            "transcript": "get"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "answers",
+            "transcript": "answers"
+          },
+          {
+            "type": "match",
+            "original": "we",
+            "transcript": "we"
+          },
+          {
+            "type": "match",
+            "original": "expect",
+            "transcript": "expect"
+          },
+          {
+            "type": "match",
+            "original": "on",
+            "transcript": "on"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "first",
+            "transcript": "first"
+          },
+          {
+            "type": "match",
+            "original": "try",
+            "transcript": "try"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "And"
+          },
+          {
+            "type": "match",
+            "original": "that's",
+            "transcript": "that's"
+          },
+          {
+            "type": "match",
+            "original": "completely",
+            "transcript": "completely"
+          },
+          {
+            "type": "match",
+            "original": "normal",
+            "transcript": "normal"
+          },
+          {
+            "type": "match",
+            "original": "Sometimes",
+            "transcript": "Sometimes"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "delay",
+            "transcript": "delay"
+          },
+          {
+            "type": "match",
+            "original": "gives",
+            "transcript": "gives"
+          },
+          {
+            "type": "match",
+            "original": "us",
+            "transcript": "us"
+          },
+          {
+            "type": "match",
+            "original": "room",
+            "transcript": "room"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "rethink",
+            "transcript": "rethink"
+          },
+          {
+            "type": "match",
+            "original": "our",
+            "transcript": "our"
+          },
+          {
+            "type": "match",
+            "original": "priorities",
+            "transcript": "priorities"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "choose",
+            "transcript": "choose"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "better",
+            "transcript": "better"
+          },
+          {
+            "type": "match",
+            "original": "path",
+            "transcript": "path"
+          },
+          {
+            "type": "match",
+            "original": "When",
+            "transcript": "When"
+          },
+          {
+            "type": "match",
+            "original": "we",
+            "transcript": "we"
+          },
+          {
+            "type": "match",
+            "original": "slow",
+            "transcript": "slow"
+          },
+          {
+            "type": "match",
+            "original": "down",
+            "transcript": "down"
+          },
+          {
+            "type": "match",
+            "original": "just",
+            "transcript": "just"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "little",
+            "transcript": "little"
+          },
+          {
+            "type": "match",
+            "original": "our",
+            "transcript": "our"
+          },
+          {
+            "type": "match",
+            "original": "message",
+            "transcript": "message"
+          },
+          {
+            "type": "match",
+            "original": "becomes",
+            "transcript": "becomes"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "It's"
+          },
+          {
+            "type": "match",
+            "original": "much",
+            "transcript": "much"
+          },
+          {
+            "type": "match",
+            "original": "easier",
+            "transcript": "easier"
+          },
+          {
+            "type": "match",
+            "original": "for",
+            "transcript": "for"
+          },
+          {
+            "type": "match",
+            "original": "others",
+            "transcript": "others"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "follow",
+            "transcript": "follow"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "8539898c-dc3a-4ae4-aead-a7998a4d9db6",
+      "createdAt": "2026-11-22T03:10:49.746Z",
+      "passageId": null,
+      "original": "We don't always get the answers we expect on the first try, and that's completely normal. Sometimes a delay gives us room to rethink our priorities and choose a better path. When we slow down just a little, our message becomes much easier for others to follow.",
+      "transcript": "We don't always get the answers we expect on the first try. And that is completely normal. Sometimes a delay gives us a room to rethink our priorities and choose a better path. When we slow down just a little, our message becomes massive. easier for others to follow.",
+      "comparison": {
+        "originalWordCount": 47,
+        "transcriptWordCount": 49,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "that's",
+            "transcript": "is"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "massive"
+          }
+        ],
+        "deletions": [],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "that"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "a"
+          }
+        ],
+        "errors": 2,
+        "ignoredInsertions": 2,
+        "matchPercentage": 95.7,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "We",
+            "transcript": "We"
+          },
+          {
+            "type": "match",
+            "original": "don't",
+            "transcript": "don't"
+          },
+          {
+            "type": "match",
+            "original": "always",
+            "transcript": "always"
+          },
+          {
+            "type": "match",
+            "original": "get",
+            "transcript": "get"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "answers",
+            "transcript": "answers"
+          },
+          {
+            "type": "match",
+            "original": "we",
+            "transcript": "we"
+          },
+          {
+            "type": "match",
+            "original": "expect",
+            "transcript": "expect"
+          },
+          {
+            "type": "match",
+            "original": "on",
+            "transcript": "on"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "first",
+            "transcript": "first"
+          },
+          {
+            "type": "match",
+            "original": "try",
+            "transcript": "try"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "And"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "that"
+          },
+          {
+            "type": "substitution",
+            "original": "that's",
+            "transcript": "is"
+          },
+          {
+            "type": "match",
+            "original": "completely",
+            "transcript": "completely"
+          },
+          {
+            "type": "match",
+            "original": "normal",
+            "transcript": "normal"
+          },
+          {
+            "type": "match",
+            "original": "Sometimes",
+            "transcript": "Sometimes"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "delay",
+            "transcript": "delay"
+          },
+          {
+            "type": "match",
+            "original": "gives",
+            "transcript": "gives"
+          },
+          {
+            "type": "match",
+            "original": "us",
+            "transcript": "us"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "room",
+            "transcript": "room"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "rethink",
+            "transcript": "rethink"
+          },
+          {
+            "type": "match",
+            "original": "our",
+            "transcript": "our"
+          },
+          {
+            "type": "match",
+            "original": "priorities",
+            "transcript": "priorities"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "choose",
+            "transcript": "choose"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "better",
+            "transcript": "better"
+          },
+          {
+            "type": "match",
+            "original": "path",
+            "transcript": "path"
+          },
+          {
+            "type": "match",
+            "original": "When",
+            "transcript": "When"
+          },
+          {
+            "type": "match",
+            "original": "we",
+            "transcript": "we"
+          },
+          {
+            "type": "match",
+            "original": "slow",
+            "transcript": "slow"
+          },
+          {
+            "type": "match",
+            "original": "down",
+            "transcript": "down"
+          },
+          {
+            "type": "match",
+            "original": "just",
+            "transcript": "just"
+          },
+          {
+            "type": "match",
+            "original": "a",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "little",
+            "transcript": "little"
+          },
+          {
+            "type": "match",
+            "original": "our",
+            "transcript": "our"
+          },
+          {
+            "type": "match",
+            "original": "message",
+            "transcript": "message"
+          },
+          {
+            "type": "match",
+            "original": "becomes",
+            "transcript": "becomes"
+          },
+          {
+            "type": "substitution",
+            "original": "much",
+            "transcript": "massive"
+          },
+          {
+            "type": "match",
+            "original": "easier",
+            "transcript": "easier"
+          },
+          {
+            "type": "match",
+            "original": "for",
+            "transcript": "for"
+          },
+          {
+            "type": "match",
+            "original": "others",
+            "transcript": "others"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "follow",
+            "transcript": "follow"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "c14540e9-4d9f-4cc9-af91-baf0a07f80a8",
+      "createdAt": "2026-11-22T03:07:59.982Z",
+      "passageId": null,
+      "original": "Thirty people gathered in the courtyard to talk about the things that matter most in daily life. Some shared stories about their families, while others spoke about the value of patience and honesty. Through every conversation, they listened closely and respected one another's point of view.",
+      "transcript": "30 people gathered in the courtyard to talk about the things that matter most in daily life. Some shared stories about their families, while others spoke about the value of patience and honesty. Through every conversation, they listened closely and respected one another's point of view.",
+      "comparison": {
+        "originalWordCount": 46,
+        "transcriptWordCount": 46,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 1,
+        "ignoredInsertions": 0,
+        "matchPercentage": 97.8,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "match",
+            "original": "gathered",
+            "transcript": "gathered"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "courtyard",
+            "transcript": "courtyard"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "talk",
+            "transcript": "talk"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "things",
+            "transcript": "things"
+          },
+          {
+            "type": "match",
+            "original": "that",
+            "transcript": "that"
+          },
+          {
+            "type": "match",
+            "original": "matter",
+            "transcript": "matter"
+          },
+          {
+            "type": "match",
+            "original": "most",
+            "transcript": "most"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "daily",
+            "transcript": "daily"
+          },
+          {
+            "type": "match",
+            "original": "life",
+            "transcript": "life"
+          },
+          {
+            "type": "match",
+            "original": "Some",
+            "transcript": "Some"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "stories",
+            "transcript": "stories"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "their",
+            "transcript": "their"
+          },
+          {
+            "type": "match",
+            "original": "families",
+            "transcript": "families"
+          },
+          {
+            "type": "match",
+            "original": "while",
+            "transcript": "while"
+          },
+          {
+            "type": "match",
+            "original": "others",
+            "transcript": "others"
+          },
+          {
+            "type": "match",
+            "original": "spoke",
+            "transcript": "spoke"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "value",
+            "transcript": "value"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "patience",
+            "transcript": "patience"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "honesty",
+            "transcript": "honesty"
+          },
+          {
+            "type": "match",
+            "original": "Through",
+            "transcript": "Through"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "conversation",
+            "transcript": "conversation"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "listened",
+            "transcript": "listened"
+          },
+          {
+            "type": "match",
+            "original": "closely",
+            "transcript": "closely"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "respected",
+            "transcript": "respected"
+          },
+          {
+            "type": "match",
+            "original": "one",
+            "transcript": "one"
+          },
+          {
+            "type": "match",
+            "original": "another's",
+            "transcript": "another's"
+          },
+          {
+            "type": "match",
+            "original": "point",
+            "transcript": "point"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "view",
+            "transcript": "view"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "9a1f8c67-5916-4e1b-a73a-c3066cf872fd",
+      "createdAt": "2026-11-22T03:06:15.612Z",
+      "passageId": null,
+      "original": "Thirty people gathered in the courtyard to talk about the things that matter most in daily life. Some shared stories about their families, while others spoke about the value of patience and honesty. Through every conversation, they listened closely and respected one another's point of view.",
+      "transcript": "30 people gathered in a courtyard to talk about the things that matter most in daily life. Some shared stories about their families while others spoke about the value of passions and honesty. Through every conversation, they listened closely and respected one another's point of view.",
+      "comparison": {
+        "originalWordCount": 46,
+        "transcriptWordCount": 46,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "substitution",
+            "original": "the",
+            "transcript": "a"
+          },
+          {
+            "type": "substitution",
+            "original": "patience",
+            "transcript": "passions"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 93.5,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "match",
+            "original": "gathered",
+            "transcript": "gathered"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "substitution",
+            "original": "the",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "courtyard",
+            "transcript": "courtyard"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "talk",
+            "transcript": "talk"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "things",
+            "transcript": "things"
+          },
+          {
+            "type": "match",
+            "original": "that",
+            "transcript": "that"
+          },
+          {
+            "type": "match",
+            "original": "matter",
+            "transcript": "matter"
+          },
+          {
+            "type": "match",
+            "original": "most",
+            "transcript": "most"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "daily",
+            "transcript": "daily"
+          },
+          {
+            "type": "match",
+            "original": "life",
+            "transcript": "life"
+          },
+          {
+            "type": "match",
+            "original": "Some",
+            "transcript": "Some"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "stories",
+            "transcript": "stories"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "their",
+            "transcript": "their"
+          },
+          {
+            "type": "match",
+            "original": "families",
+            "transcript": "families"
+          },
+          {
+            "type": "match",
+            "original": "while",
+            "transcript": "while"
+          },
+          {
+            "type": "match",
+            "original": "others",
+            "transcript": "others"
+          },
+          {
+            "type": "match",
+            "original": "spoke",
+            "transcript": "spoke"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "value",
+            "transcript": "value"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "substitution",
+            "original": "patience",
+            "transcript": "passions"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "honesty",
+            "transcript": "honesty"
+          },
+          {
+            "type": "match",
+            "original": "Through",
+            "transcript": "Through"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "conversation",
+            "transcript": "conversation"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "listened",
+            "transcript": "listened"
+          },
+          {
+            "type": "match",
+            "original": "closely",
+            "transcript": "closely"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "respected",
+            "transcript": "respected"
+          },
+          {
+            "type": "match",
+            "original": "one",
+            "transcript": "one"
+          },
+          {
+            "type": "match",
+            "original": "another's",
+            "transcript": "another's"
+          },
+          {
+            "type": "match",
+            "original": "point",
+            "transcript": "point"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "view",
+            "transcript": "view"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "4d26a8cc-9d86-4a1f-96a7-8c45669f03df",
+      "createdAt": "2026-11-22T03:05:25.210Z",
+      "passageId": null,
+      "original": "Thirty people gathered in the courtyard to talk about the things that matter most in daily life. Some shared stories about their families, while others spoke about the value of patience and honesty. Through every conversation, they listened closely and respected one another's point of view.",
+      "transcript": "Aarti people gathered in a courtyard to talk about the things that matter most in daily life. Some shared stories about they are families, while others spoke about the bandwidth. patience and honesty. Through every conversation they listened closely and repeated and respected one another's point of view.",
+      "comparison": {
+        "originalWordCount": 46,
+        "transcriptWordCount": 48,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "Aarti"
+          },
+          {
+            "type": "substitution",
+            "original": "the",
+            "transcript": "a"
+          },
+          {
+            "type": "substitution",
+            "original": "their",
+            "transcript": "are"
+          },
+          {
+            "type": "substitution",
+            "original": "of",
+            "transcript": "bandwidth"
+          }
+        ],
+        "deletions": [
+          {
+            "type": "deletion",
+            "original": "value",
+            "transcript": null
+          }
+        ],
+        "insertions": [
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "they"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "and"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "repeated"
+          }
+        ],
+        "errors": 5,
+        "ignoredInsertions": 3,
+        "matchPercentage": 89.1,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "Aarti"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "match",
+            "original": "gathered",
+            "transcript": "gathered"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "substitution",
+            "original": "the",
+            "transcript": "a"
+          },
+          {
+            "type": "match",
+            "original": "courtyard",
+            "transcript": "courtyard"
+          },
+          {
+            "type": "match",
+            "original": "to",
+            "transcript": "to"
+          },
+          {
+            "type": "match",
+            "original": "talk",
+            "transcript": "talk"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "things",
+            "transcript": "things"
+          },
+          {
+            "type": "match",
+            "original": "that",
+            "transcript": "that"
+          },
+          {
+            "type": "match",
+            "original": "matter",
+            "transcript": "matter"
+          },
+          {
+            "type": "match",
+            "original": "most",
+            "transcript": "most"
+          },
+          {
+            "type": "match",
+            "original": "in",
+            "transcript": "in"
+          },
+          {
+            "type": "match",
+            "original": "daily",
+            "transcript": "daily"
+          },
+          {
+            "type": "match",
+            "original": "life",
+            "transcript": "life"
+          },
+          {
+            "type": "match",
+            "original": "Some",
+            "transcript": "Some"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "stories",
+            "transcript": "stories"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "they"
+          },
+          {
+            "type": "substitution",
+            "original": "their",
+            "transcript": "are"
+          },
+          {
+            "type": "match",
+            "original": "families",
+            "transcript": "families"
+          },
+          {
+            "type": "match",
+            "original": "while",
+            "transcript": "while"
+          },
+          {
+            "type": "match",
+            "original": "others",
+            "transcript": "others"
+          },
+          {
+            "type": "match",
+            "original": "spoke",
+            "transcript": "spoke"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "deletion",
+            "original": "value",
+            "transcript": null
+          },
+          {
+            "type": "substitution",
+            "original": "of",
+            "transcript": "bandwidth"
+          },
+          {
+            "type": "match",
+            "original": "patience",
+            "transcript": "patience"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "honesty",
+            "transcript": "honesty"
+          },
+          {
+            "type": "match",
+            "original": "Through",
+            "transcript": "Through"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "conversation",
+            "transcript": "conversation"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "listened",
+            "transcript": "listened"
+          },
+          {
+            "type": "match",
+            "original": "closely",
+            "transcript": "closely"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "and"
+          },
+          {
+            "type": "insertion",
+            "original": null,
+            "transcript": "repeated"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "respected",
+            "transcript": "respected"
+          },
+          {
+            "type": "match",
+            "original": "one",
+            "transcript": "one"
+          },
+          {
+            "type": "match",
+            "original": "another's",
+            "transcript": "another's"
+          },
+          {
+            "type": "match",
+            "original": "point",
+            "transcript": "point"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "view",
+            "transcript": "view"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "e0432eda-9900-4f33-b1ac-04788b670e6b",
+      "createdAt": "2026-11-22T03:03:48.486Z",
+      "passageId": null,
+      "original": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when plans change unexpectedly. By the end of the session, everyone had practical notes they could apply right away.",
+      "transcript": "During the afternoon workshop, the speakers shared early lesson. From their research. They talked about how careful planning helps people adopt when plants change unexpectedly.  By the end of the session. Everyone had practical notes, they could apply right away.",
+      "comparison": {
+        "originalWordCount": 40,
+        "transcriptWordCount": 40,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "lessons",
+            "transcript": "lesson"
+          },
+          {
+            "type": "substitution",
+            "original": "adapt",
+            "transcript": "adopt"
+          },
+          {
+            "type": "substitution",
+            "original": "plans",
+            "transcript": "plants"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 92.5,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "During",
+            "transcript": "During"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "afternoon",
+            "transcript": "afternoon"
+          },
+          {
+            "type": "match",
+            "original": "workshop",
+            "transcript": "workshop"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "speakers",
+            "transcript": "speakers"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "early",
+            "transcript": "early"
+          },
+          {
+            "type": "substitution",
+            "original": "lessons",
+            "transcript": "lesson"
+          },
+          {
+            "type": "match",
+            "original": "from",
+            "transcript": "From"
+          },
+          {
+            "type": "match",
+            "original": "their",
+            "transcript": "their"
+          },
+          {
+            "type": "match",
+            "original": "research",
+            "transcript": "research"
+          },
+          {
+            "type": "match",
+            "original": "They",
+            "transcript": "They"
+          },
+          {
+            "type": "match",
+            "original": "talked",
+            "transcript": "talked"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "how",
+            "transcript": "how"
+          },
+          {
+            "type": "match",
+            "original": "careful",
+            "transcript": "careful"
+          },
+          {
+            "type": "match",
+            "original": "planning",
+            "transcript": "planning"
+          },
+          {
+            "type": "match",
+            "original": "helps",
+            "transcript": "helps"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "substitution",
+            "original": "adapt",
+            "transcript": "adopt"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "substitution",
+            "original": "plans",
+            "transcript": "plants"
+          },
+          {
+            "type": "match",
+            "original": "change",
+            "transcript": "change"
+          },
+          {
+            "type": "match",
+            "original": "unexpectedly",
+            "transcript": "unexpectedly"
+          },
+          {
+            "type": "match",
+            "original": "By",
+            "transcript": "By"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "end",
+            "transcript": "end"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "session",
+            "transcript": "session"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "Everyone"
+          },
+          {
+            "type": "match",
+            "original": "had",
+            "transcript": "had"
+          },
+          {
+            "type": "match",
+            "original": "practical",
+            "transcript": "practical"
+          },
+          {
+            "type": "match",
+            "original": "notes",
+            "transcript": "notes"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "could",
+            "transcript": "could"
+          },
+          {
+            "type": "match",
+            "original": "apply",
+            "transcript": "apply"
+          },
+          {
+            "type": "match",
+            "original": "right",
+            "transcript": "right"
+          },
+          {
+            "type": "match",
+            "original": "away",
+            "transcript": "away"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "f62f365d-1273-4f8d-ad75-81b0d1cc1427",
+      "createdAt": "2026-11-22T03:02:41.438Z",
+      "passageId": null,
+      "original": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when plans change unexpectedly. By the end of the session, everyone had practical notes they could apply right away.",
+      "transcript": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when plans sense unexpectedly. By the end of the season, everyone had practical notes they could apply right away.",
+      "comparison": {
+        "originalWordCount": 40,
+        "transcriptWordCount": 40,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "change",
+            "transcript": "sense"
+          },
+          {
+            "type": "substitution",
+            "original": "session",
+            "transcript": "season"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 2,
+        "ignoredInsertions": 0,
+        "matchPercentage": 95,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "During",
+            "transcript": "During"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "afternoon",
+            "transcript": "afternoon"
+          },
+          {
+            "type": "match",
+            "original": "workshop",
+            "transcript": "workshop"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "speakers",
+            "transcript": "speakers"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "early",
+            "transcript": "early"
+          },
+          {
+            "type": "match",
+            "original": "lessons",
+            "transcript": "lessons"
+          },
+          {
+            "type": "match",
+            "original": "from",
+            "transcript": "from"
+          },
+          {
+            "type": "match",
+            "original": "their",
+            "transcript": "their"
+          },
+          {
+            "type": "match",
+            "original": "research",
+            "transcript": "research"
+          },
+          {
+            "type": "match",
+            "original": "They",
+            "transcript": "They"
+          },
+          {
+            "type": "match",
+            "original": "talked",
+            "transcript": "talked"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "how",
+            "transcript": "how"
+          },
+          {
+            "type": "match",
+            "original": "careful",
+            "transcript": "careful"
+          },
+          {
+            "type": "match",
+            "original": "planning",
+            "transcript": "planning"
+          },
+          {
+            "type": "match",
+            "original": "helps",
+            "transcript": "helps"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "match",
+            "original": "adapt",
+            "transcript": "adapt"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "plans",
+            "transcript": "plans"
+          },
+          {
+            "type": "substitution",
+            "original": "change",
+            "transcript": "sense"
+          },
+          {
+            "type": "match",
+            "original": "unexpectedly",
+            "transcript": "unexpectedly"
+          },
+          {
+            "type": "match",
+            "original": "By",
+            "transcript": "By"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "end",
+            "transcript": "end"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "session",
+            "transcript": "season"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "everyone"
+          },
+          {
+            "type": "match",
+            "original": "had",
+            "transcript": "had"
+          },
+          {
+            "type": "match",
+            "original": "practical",
+            "transcript": "practical"
+          },
+          {
+            "type": "match",
+            "original": "notes",
+            "transcript": "notes"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "could",
+            "transcript": "could"
+          },
+          {
+            "type": "match",
+            "original": "apply",
+            "transcript": "apply"
+          },
+          {
+            "type": "match",
+            "original": "right",
+            "transcript": "right"
+          },
+          {
+            "type": "match",
+            "original": "away",
+            "transcript": "away"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "a6bc6b6d-bef8-4e7b-a1f0-288fa62521e5",
+      "createdAt": "2026-11-22T03:01:53.216Z",
+      "passageId": null,
+      "original": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when plans change unexpectedly. By the end of the session, everyone had practical notes they could apply right away.",
+      "transcript": "During the afternoon workshop, the speakers shared early lessons from their research. They talked about how careful planning helps people adapt when planning says unexpectedly. By the end of the season, everyone had practical notes they could apply right away.",
+      "comparison": {
+        "originalWordCount": 40,
+        "transcriptWordCount": 40,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "plans",
+            "transcript": "planning"
+          },
+          {
+            "type": "substitution",
+            "original": "change",
+            "transcript": "says"
+          },
+          {
+            "type": "substitution",
+            "original": "session",
+            "transcript": "season"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 92.5,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "During",
+            "transcript": "During"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "afternoon",
+            "transcript": "afternoon"
+          },
+          {
+            "type": "match",
+            "original": "workshop",
+            "transcript": "workshop"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "speakers",
+            "transcript": "speakers"
+          },
+          {
+            "type": "match",
+            "original": "shared",
+            "transcript": "shared"
+          },
+          {
+            "type": "match",
+            "original": "early",
+            "transcript": "early"
+          },
+          {
+            "type": "match",
+            "original": "lessons",
+            "transcript": "lessons"
+          },
+          {
+            "type": "match",
+            "original": "from",
+            "transcript": "from"
+          },
+          {
+            "type": "match",
+            "original": "their",
+            "transcript": "their"
+          },
+          {
+            "type": "match",
+            "original": "research",
+            "transcript": "research"
+          },
+          {
+            "type": "match",
+            "original": "They",
+            "transcript": "They"
+          },
+          {
+            "type": "match",
+            "original": "talked",
+            "transcript": "talked"
+          },
+          {
+            "type": "match",
+            "original": "about",
+            "transcript": "about"
+          },
+          {
+            "type": "match",
+            "original": "how",
+            "transcript": "how"
+          },
+          {
+            "type": "match",
+            "original": "careful",
+            "transcript": "careful"
+          },
+          {
+            "type": "match",
+            "original": "planning",
+            "transcript": "planning"
+          },
+          {
+            "type": "match",
+            "original": "helps",
+            "transcript": "helps"
+          },
+          {
+            "type": "match",
+            "original": "people",
+            "transcript": "people"
+          },
+          {
+            "type": "match",
+            "original": "adapt",
+            "transcript": "adapt"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "substitution",
+            "original": "plans",
+            "transcript": "planning"
+          },
+          {
+            "type": "substitution",
+            "original": "change",
+            "transcript": "says"
+          },
+          {
+            "type": "match",
+            "original": "unexpectedly",
+            "transcript": "unexpectedly"
+          },
+          {
+            "type": "match",
+            "original": "By",
+            "transcript": "By"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "end",
+            "transcript": "end"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "session",
+            "transcript": "season"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "everyone"
+          },
+          {
+            "type": "match",
+            "original": "had",
+            "transcript": "had"
+          },
+          {
+            "type": "match",
+            "original": "practical",
+            "transcript": "practical"
+          },
+          {
+            "type": "match",
+            "original": "notes",
+            "transcript": "notes"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "could",
+            "transcript": "could"
+          },
+          {
+            "type": "match",
+            "original": "apply",
+            "transcript": "apply"
+          },
+          {
+            "type": "match",
+            "original": "right",
+            "transcript": "right"
+          },
+          {
+            "type": "match",
+            "original": "away",
+            "transcript": "away"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "73955d19-f2ee-4550-9a93-69f8a11ce756",
+      "createdAt": "2026-11-22T03:00:49.888Z",
+      "passageId": null,
+      "original": "The delivery crew checked the tracks behind the warehouse before the trucks arrived. Several stacks of crates sat near the exit, and the team counted every package twice. Even when the schedule got tight, everyone stayed calm and kept the shipments moving on time.",
+      "transcript": "The delivery crew checked the tracks behind the warehouse before the tracks arrived. Several stack up crates sat near the exit, and the team counted every package twice, even when the schedule got tight. Everyone stayed calm and kept the shipments moving on time.",
+      "comparison": {
+        "originalWordCount": 44,
+        "transcriptWordCount": 44,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "substitution",
+            "original": "of",
+            "transcript": "up"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 93.2,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "The",
+            "transcript": "The"
+          },
+          {
+            "type": "match",
+            "original": "delivery",
+            "transcript": "delivery"
+          },
+          {
+            "type": "match",
+            "original": "crew",
+            "transcript": "crew"
+          },
+          {
+            "type": "match",
+            "original": "checked",
+            "transcript": "checked"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "tracks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "behind",
+            "transcript": "behind"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "warehouse",
+            "transcript": "warehouse"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "arrived",
+            "transcript": "arrived"
+          },
+          {
+            "type": "match",
+            "original": "Several",
+            "transcript": "Several"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "substitution",
+            "original": "of",
+            "transcript": "up"
+          },
+          {
+            "type": "match",
+            "original": "crates",
+            "transcript": "crates"
+          },
+          {
+            "type": "match",
+            "original": "sat",
+            "transcript": "sat"
+          },
+          {
+            "type": "match",
+            "original": "near",
+            "transcript": "near"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "exit",
+            "transcript": "exit"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "team",
+            "transcript": "team"
+          },
+          {
+            "type": "match",
+            "original": "counted",
+            "transcript": "counted"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "package",
+            "transcript": "package"
+          },
+          {
+            "type": "match",
+            "original": "twice",
+            "transcript": "twice"
+          },
+          {
+            "type": "match",
+            "original": "Even",
+            "transcript": "even"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "schedule",
+            "transcript": "schedule"
+          },
+          {
+            "type": "match",
+            "original": "got",
+            "transcript": "got"
+          },
+          {
+            "type": "match",
+            "original": "tight",
+            "transcript": "tight"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "Everyone"
+          },
+          {
+            "type": "match",
+            "original": "stayed",
+            "transcript": "stayed"
+          },
+          {
+            "type": "match",
+            "original": "calm",
+            "transcript": "calm"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "kept",
+            "transcript": "kept"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "shipments",
+            "transcript": "shipments"
+          },
+          {
+            "type": "match",
+            "original": "moving",
+            "transcript": "moving"
+          },
+          {
+            "type": "match",
+            "original": "on",
+            "transcript": "on"
+          },
+          {
+            "type": "match",
+            "original": "time",
+            "transcript": "time"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "cedde297-9600-41e7-9281-d3a9ac13be7f",
+      "createdAt": "2026-11-22T02:59:18.808Z",
+      "passageId": null,
+      "original": "The delivery crew checked the tracks behind the warehouse before the trucks arrived. Several stacks of crates sat near the exit, and the team counted every package twice. Even when the schedule got tight, everyone stayed calm and kept the shipments moving on time.",
+      "transcript": "The delivery crew checked the tracks behind the warehouse before the tracks arrived. Several stack of creates sat near the exit and the team counted every package twice. Even when the schedule got high, everyone stayed calm and kept the shipment moving on time.",
+      "comparison": {
+        "originalWordCount": 44,
+        "transcriptWordCount": 44,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "substitution",
+            "original": "crates",
+            "transcript": "creates"
+          },
+          {
+            "type": "substitution",
+            "original": "tight",
+            "transcript": "high"
+          },
+          {
+            "type": "substitution",
+            "original": "shipments",
+            "transcript": "shipment"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 5,
+        "ignoredInsertions": 0,
+        "matchPercentage": 88.6,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "The",
+            "transcript": "The"
+          },
+          {
+            "type": "match",
+            "original": "delivery",
+            "transcript": "delivery"
+          },
+          {
+            "type": "match",
+            "original": "crew",
+            "transcript": "crew"
+          },
+          {
+            "type": "match",
+            "original": "checked",
+            "transcript": "checked"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "tracks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "behind",
+            "transcript": "behind"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "warehouse",
+            "transcript": "warehouse"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "arrived",
+            "transcript": "arrived"
+          },
+          {
+            "type": "match",
+            "original": "Several",
+            "transcript": "Several"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "substitution",
+            "original": "crates",
+            "transcript": "creates"
+          },
+          {
+            "type": "match",
+            "original": "sat",
+            "transcript": "sat"
+          },
+          {
+            "type": "match",
+            "original": "near",
+            "transcript": "near"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "exit",
+            "transcript": "exit"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "team",
+            "transcript": "team"
+          },
+          {
+            "type": "match",
+            "original": "counted",
+            "transcript": "counted"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "package",
+            "transcript": "package"
+          },
+          {
+            "type": "match",
+            "original": "twice",
+            "transcript": "twice"
+          },
+          {
+            "type": "match",
+            "original": "Even",
+            "transcript": "Even"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "schedule",
+            "transcript": "schedule"
+          },
+          {
+            "type": "match",
+            "original": "got",
+            "transcript": "got"
+          },
+          {
+            "type": "substitution",
+            "original": "tight",
+            "transcript": "high"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "everyone"
+          },
+          {
+            "type": "match",
+            "original": "stayed",
+            "transcript": "stayed"
+          },
+          {
+            "type": "match",
+            "original": "calm",
+            "transcript": "calm"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "kept",
+            "transcript": "kept"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "shipments",
+            "transcript": "shipment"
+          },
+          {
+            "type": "match",
+            "original": "moving",
+            "transcript": "moving"
+          },
+          {
+            "type": "match",
+            "original": "on",
+            "transcript": "on"
+          },
+          {
+            "type": "match",
+            "original": "time",
+            "transcript": "time"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "2c202197-5c5b-4600-877f-f27dac60f0ac",
+      "createdAt": "2026-11-22T02:57:47.928Z",
+      "passageId": null,
+      "original": "The delivery crew checked the tracks behind the warehouse before the trucks arrived. Several stacks of crates sat near the exit, and the team counted every package twice. Even when the schedule got tight, everyone stayed calm and kept the shipments moving on time.",
+      "transcript": "The delivery crew checked the trucks behind the warehouse before the trucks arrived. Several stack of crates sat near the exit, and the team counted every package twice, even when the schedule got tight. Everyone stayed calm and keep the shipments moving on time.",
+      "comparison": {
+        "originalWordCount": 44,
+        "transcriptWordCount": 44,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "substitution",
+            "original": "kept",
+            "transcript": "keep"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 93.2,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "The",
+            "transcript": "The"
+          },
+          {
+            "type": "match",
+            "original": "delivery",
+            "transcript": "delivery"
+          },
+          {
+            "type": "match",
+            "original": "crew",
+            "transcript": "crew"
+          },
+          {
+            "type": "match",
+            "original": "checked",
+            "transcript": "checked"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "match",
+            "original": "behind",
+            "transcript": "behind"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "warehouse",
+            "transcript": "warehouse"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "trucks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "match",
+            "original": "arrived",
+            "transcript": "arrived"
+          },
+          {
+            "type": "match",
+            "original": "Several",
+            "transcript": "Several"
+          },
+          {
+            "type": "substitution",
+            "original": "stacks",
+            "transcript": "stack"
+          },
+          {
+            "type": "match",
+            "original": "of",
+            "transcript": "of"
+          },
+          {
+            "type": "match",
+            "original": "crates",
+            "transcript": "crates"
+          },
+          {
+            "type": "match",
+            "original": "sat",
+            "transcript": "sat"
+          },
+          {
+            "type": "match",
+            "original": "near",
+            "transcript": "near"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "exit",
+            "transcript": "exit"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "team",
+            "transcript": "team"
+          },
+          {
+            "type": "match",
+            "original": "counted",
+            "transcript": "counted"
+          },
+          {
+            "type": "match",
+            "original": "every",
+            "transcript": "every"
+          },
+          {
+            "type": "match",
+            "original": "package",
+            "transcript": "package"
+          },
+          {
+            "type": "match",
+            "original": "twice",
+            "transcript": "twice"
+          },
+          {
+            "type": "match",
+            "original": "Even",
+            "transcript": "even"
+          },
+          {
+            "type": "match",
+            "original": "when",
+            "transcript": "when"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "schedule",
+            "transcript": "schedule"
+          },
+          {
+            "type": "match",
+            "original": "got",
+            "transcript": "got"
+          },
+          {
+            "type": "match",
+            "original": "tight",
+            "transcript": "tight"
+          },
+          {
+            "type": "match",
+            "original": "everyone",
+            "transcript": "Everyone"
+          },
+          {
+            "type": "match",
+            "original": "stayed",
+            "transcript": "stayed"
+          },
+          {
+            "type": "match",
+            "original": "calm",
+            "transcript": "calm"
+          },
+          {
+            "type": "match",
+            "original": "and",
+            "transcript": "and"
+          },
+          {
+            "type": "substitution",
+            "original": "kept",
+            "transcript": "keep"
+          },
+          {
+            "type": "match",
+            "original": "the",
+            "transcript": "the"
+          },
+          {
+            "type": "match",
+            "original": "shipments",
+            "transcript": "shipments"
+          },
+          {
+            "type": "match",
+            "original": "moving",
+            "transcript": "moving"
+          },
+          {
+            "type": "match",
+            "original": "on",
+            "transcript": "on"
+          },
+          {
+            "type": "match",
+            "original": "time",
+            "transcript": "time"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "31b1fb3c-4cd1-46a6-8ef1-518d442d7034",
+      "createdAt": "2026-11-22T02:54:51.843Z",
+      "passageId": null,
+      "original": "Thirty thoughtful travelers think those three paths won't bother them.",
+      "transcript": "30 thoughtful travelers think those three paths won't bother them.",
+      "comparison": {
+        "originalWordCount": 10,
+        "transcriptWordCount": 10,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 1,
+        "ignoredInsertions": 0,
+        "matchPercentage": 90,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "match",
+            "original": "thoughtful",
+            "transcript": "thoughtful"
+          },
+          {
+            "type": "match",
+            "original": "travelers",
+            "transcript": "travelers"
+          },
+          {
+            "type": "match",
+            "original": "think",
+            "transcript": "think"
+          },
+          {
+            "type": "match",
+            "original": "those",
+            "transcript": "those"
+          },
+          {
+            "type": "match",
+            "original": "three",
+            "transcript": "three"
+          },
+          {
+            "type": "match",
+            "original": "paths",
+            "transcript": "paths"
+          },
+          {
+            "type": "match",
+            "original": "won't",
+            "transcript": "won't"
+          },
+          {
+            "type": "match",
+            "original": "bother",
+            "transcript": "bother"
+          },
+          {
+            "type": "match",
+            "original": "them",
+            "transcript": "them"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "59fdd0b4-1435-4633-b02d-c0862e05c140",
+      "createdAt": "2026-11-22T02:54:03.936Z",
+      "passageId": null,
+      "original": "Thirty thoughtful travelers think those three paths won't bother them.",
+      "transcript": "30 thoughtful travelers think those three paths don't bother them.",
+      "comparison": {
+        "originalWordCount": 10,
+        "transcriptWordCount": 10,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "substitution",
+            "original": "won't",
+            "transcript": "don't"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 2,
+        "ignoredInsertions": 0,
+        "matchPercentage": 80,
+        "alignment": [
+          {
+            "type": "substitution",
+            "original": "Thirty",
+            "transcript": "30"
+          },
+          {
+            "type": "match",
+            "original": "thoughtful",
+            "transcript": "thoughtful"
+          },
+          {
+            "type": "match",
+            "original": "travelers",
+            "transcript": "travelers"
+          },
+          {
+            "type": "match",
+            "original": "think",
+            "transcript": "think"
+          },
+          {
+            "type": "match",
+            "original": "those",
+            "transcript": "those"
+          },
+          {
+            "type": "match",
+            "original": "three",
+            "transcript": "three"
+          },
+          {
+            "type": "match",
+            "original": "paths",
+            "transcript": "paths"
+          },
+          {
+            "type": "substitution",
+            "original": "won't",
+            "transcript": "don't"
+          },
+          {
+            "type": "match",
+            "original": "bother",
+            "transcript": "bother"
+          },
+          {
+            "type": "match",
+            "original": "them",
+            "transcript": "them"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "dd8de90e-d76f-4d9e-8fe5-049a22eff17e",
+      "createdAt": "2026-11-22T02:52:02.840Z",
+      "passageId": null,
+      "original": "Early learners merge three clear terms before they serve first.",
+      "transcript": "Early learners marks three clear terms before they serve first.",
+      "comparison": {
+        "originalWordCount": 10,
+        "transcriptWordCount": 10,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "marks"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 1,
+        "ignoredInsertions": 0,
+        "matchPercentage": 90,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Early",
+            "transcript": "Early"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "marks"
+          },
+          {
+            "type": "match",
+            "original": "three",
+            "transcript": "three"
+          },
+          {
+            "type": "match",
+            "original": "clear",
+            "transcript": "clear"
+          },
+          {
+            "type": "match",
+            "original": "terms",
+            "transcript": "terms"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "serve",
+            "transcript": "serve"
+          },
+          {
+            "type": "match",
+            "original": "first",
+            "transcript": "first"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "5ebeca00-ca9b-49bc-a8f7-fdba1a97cc3e",
+      "createdAt": "2026-11-22T02:51:12.278Z",
+      "passageId": null,
+      "original": "Early learners merge three clear terms before they serve first.",
+      "transcript": "Early learners marks three clear terms before they serve first.",
+      "comparison": {
+        "originalWordCount": 10,
+        "transcriptWordCount": 10,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "marks"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 1,
+        "ignoredInsertions": 0,
+        "matchPercentage": 90,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Early",
+            "transcript": "Early"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "marks"
+          },
+          {
+            "type": "match",
+            "original": "three",
+            "transcript": "three"
+          },
+          {
+            "type": "match",
+            "original": "clear",
+            "transcript": "clear"
+          },
+          {
+            "type": "match",
+            "original": "terms",
+            "transcript": "terms"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "serve",
+            "transcript": "serve"
+          },
+          {
+            "type": "match",
+            "original": "first",
+            "transcript": "first"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "ed10f4b6-e6a5-4dd5-999d-855981c57fa7",
+      "createdAt": "2026-11-22T02:50:42.598Z",
+      "passageId": null,
+      "original": "Early learners merge three clear terms before they serve first.",
+      "transcript": "Early learners must hear clear terms before they serve fast.",
+      "comparison": {
+        "originalWordCount": 10,
+        "transcriptWordCount": 10,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "must"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "hear"
+          },
+          {
+            "type": "substitution",
+            "original": "first",
+            "transcript": "fast"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 3,
+        "ignoredInsertions": 0,
+        "matchPercentage": 70,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Early",
+            "transcript": "Early"
+          },
+          {
+            "type": "match",
+            "original": "learners",
+            "transcript": "learners"
+          },
+          {
+            "type": "substitution",
+            "original": "merge",
+            "transcript": "must"
+          },
+          {
+            "type": "substitution",
+            "original": "three",
+            "transcript": "hear"
+          },
+          {
+            "type": "match",
+            "original": "clear",
+            "transcript": "clear"
+          },
+          {
+            "type": "match",
+            "original": "terms",
+            "transcript": "terms"
+          },
+          {
+            "type": "match",
+            "original": "before",
+            "transcript": "before"
+          },
+          {
+            "type": "match",
+            "original": "they",
+            "transcript": "they"
+          },
+          {
+            "type": "match",
+            "original": "serve",
+            "transcript": "serve"
+          },
+          {
+            "type": "substitution",
+            "original": "first",
+            "transcript": "fast"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "f4f42c6b-1041-4144-9890-68677b1334d9",
+      "createdAt": "2026-11-22T02:49:31.183Z",
+      "passageId": null,
+      "original": "Six crisp trucks cross six thick tracks while six bright sparks drift past.",
+      "transcript": "Six crisp tracks cross six thick tracks while six bright sparks drift past.",
+      "comparison": {
+        "originalWordCount": 13,
+        "transcriptWordCount": 13,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 1,
+        "ignoredInsertions": 0,
+        "matchPercentage": 92.3,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Six",
+            "transcript": "Six"
+          },
+          {
+            "type": "match",
+            "original": "crisp",
+            "transcript": "crisp"
+          },
+          {
+            "type": "substitution",
+            "original": "trucks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "cross",
+            "transcript": "cross"
+          },
+          {
+            "type": "match",
+            "original": "six",
+            "transcript": "six"
+          },
+          {
+            "type": "match",
+            "original": "thick",
+            "transcript": "thick"
+          },
+          {
+            "type": "match",
+            "original": "tracks",
+            "transcript": "tracks"
+          },
+          {
+            "type": "match",
+            "original": "while",
+            "transcript": "while"
+          },
+          {
+            "type": "match",
+            "original": "six",
+            "transcript": "six"
+          },
+          {
+            "type": "match",
+            "original": "bright",
+            "transcript": "bright"
+          },
+          {
+            "type": "match",
+            "original": "sparks",
+            "transcript": "sparks"
+          },
+          {
+            "type": "match",
+            "original": "drift",
+            "transcript": "drift"
+          },
+          {
+            "type": "match",
+            "original": "past",
+            "transcript": "past"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    },
+    {
+      "id": "dde38cd4-79c4-4175-86ee-a6a587f7ac50",
+      "createdAt": "2026-11-22T02:46:51.447Z",
+      "passageId": null,
+      "original": "Six crisp trucks cross six thick tracks while six bright sparks drift past.",
+      "transcript": "Six crispy trucks across six thick trucks while six bright sparks dipped past.",
+      "comparison": {
+        "originalWordCount": 13,
+        "transcriptWordCount": 13,
+        "substitutions": [
+          {
+            "type": "substitution",
+            "original": "crisp",
+            "transcript": "crispy"
+          },
+          {
+            "type": "substitution",
+            "original": "cross",
+            "transcript": "across"
+          },
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "substitution",
+            "original": "drift",
+            "transcript": "dipped"
+          }
+        ],
+        "deletions": [],
+        "insertions": [],
+        "errors": 4,
+        "ignoredInsertions": 0,
+        "matchPercentage": 69.2,
+        "alignment": [
+          {
+            "type": "match",
+            "original": "Six",
+            "transcript": "Six"
+          },
+          {
+            "type": "substitution",
+            "original": "crisp",
+            "transcript": "crispy"
+          },
+          {
+            "type": "match",
+            "original": "trucks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "substitution",
+            "original": "cross",
+            "transcript": "across"
+          },
+          {
+            "type": "match",
+            "original": "six",
+            "transcript": "six"
+          },
+          {
+            "type": "match",
+            "original": "thick",
+            "transcript": "thick"
+          },
+          {
+            "type": "substitution",
+            "original": "tracks",
+            "transcript": "trucks"
+          },
+          {
+            "type": "match",
+            "original": "while",
+            "transcript": "while"
+          },
+          {
+            "type": "match",
+            "original": "six",
+            "transcript": "six"
+          },
+          {
+            "type": "match",
+            "original": "bright",
+            "transcript": "bright"
+          },
+          {
+            "type": "match",
+            "original": "sparks",
+            "transcript": "sparks"
+          },
+          {
+            "type": "substitution",
+            "original": "drift",
+            "transcript": "dipped"
+          },
+          {
+            "type": "match",
+            "original": "past",
+            "transcript": "past"
+          }
+        ]
+      },
+      "aiAnalysis": null,
+      "aiError": "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "analysisVersion": "1.0"
+    }
+  ]
+}
