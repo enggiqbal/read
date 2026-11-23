@@ -1,3 +1,5 @@
 node_modules
 data/recordings
 *DS_Store
+data/accent-ref
+data/accent-user

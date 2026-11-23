@@ -59,6 +59,8 @@ const basicAuth = (req, res, next) => {
 
 const app = express();
 
+const americanAccentRouter = require("./american-accent");
+app.use("/american-accent", americanAccentRouter);
 
 app.use(basicAuth);
 
