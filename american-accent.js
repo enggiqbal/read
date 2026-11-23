@@ -1,13 +1,24 @@
+// american-accent.js
+// Express router & interactive Praat + Vowel Quadrilateral self-correction UI.
+
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
 const crypto = require("crypto");
-const { execFile } = require("child_process");
-const { promisify } = require("util");
 const multer = require("multer");
 
-const execFileAsync = promisify(execFile);
+const { getWordPhoneticPlan } = require("./accent-phonetics");
+const {
+  encodeWav16kMono,
+  decodeWavBuffer,
+  decodeUploadedAudioTo16kMono,
+  trimSilence,
+  normalizePeak,
+  analyzeSignal,
+  computeDtwPath
+} = require("./accent-dsp");
+const { runFullDiagnosis } = require("./accent-diagnostics");
 
 const router = express.Router();
 
@@ -22,822 +33,123 @@ const upload = multer({
   limits: { fileSize: 15 * 1024 * 1024 }
 });
 
-// --------------------------------------------------
-// AUDIO DECODING & WAV HELPERS (16 kHz mono float32)
-// --------------------------------------------------
-
-function encodeWav16kMono(samples) {
-  const sampleRate = 16000;
-  const numSamples = samples.length;
-  const byteRate = sampleRate * 2;
-  const dataSize = numSamples * 2;
-  const buffer = Buffer.alloc(44 + dataSize);
-
-  buffer.write("RIFF", 0);
-  buffer.writeUInt32LE(36 + dataSize, 4);
-  buffer.write("WAVE", 8);
-  buffer.write("fmt ", 12);
-  buffer.writeUInt32LE(16, 16); // PCM chunk size
-  buffer.writeUInt16LE(1, 20);  // PCM format
-  buffer.writeUInt16LE(1, 22);  // Mono
-  buffer.writeUInt32LE(sampleRate, 24);
-  buffer.writeUInt32LE(byteRate, 28);
-  buffer.writeUInt16LE(2, 32);  // Block align
-  buffer.writeUInt16LE(16, 34); // Bits per sample
-  buffer.write("data", 36);
-  buffer.writeUInt32LE(dataSize, 40);
-
-  for (let i = 0; i < numSamples; i++) {
-    const clamped = Math.max(-1, Math.min(1, samples[i] || 0));
-    const int16 = clamped < 0 ? Math.round(clamped * 32768) : Math.round(clamped * 32767);
-    buffer.writeInt16LE(int16, 44 + i * 2);
-  }
-  return buffer;
-}
-
-function decodeWavBuffer(wavBuf) {
-  if (!Buffer.isBuffer(wavBuf) || wavBuf.length < 44) {
-    throw new Error("Invalid WAV buffer");
-  }
-  if (wavBuf.toString("ascii", 0, 4) !== "RIFF" || wavBuf.toString("ascii", 8, 12) !== "WAVE") {
-    throw new Error("Not a RIFF/WAVE file");
-  }
-
-  let offset = 12;
-  let audioFormat = 1;
-  let channels = 1;
-  let sampleRate = 16000;
-  let bitsPerSample = 16;
-  let dataOffset = -1;
-  let dataSize = 0;
-
-  while (offset + 8 <= wavBuf.length) {
-    const chunkId = wavBuf.toString("ascii", offset, offset + 4);
-    const chunkSize = wavBuf.readUInt32LE(offset + 4);
-    const chunkStart = offset + 8;
-
-    if (chunkId === "fmt " && chunkSize >= 16) {
-      audioFormat = wavBuf.readUInt16LE(chunkStart);
-      channels = wavBuf.readUInt16LE(chunkStart + 2);
-      sampleRate = wavBuf.readUInt32LE(chunkStart + 4);
-      bitsPerSample = wavBuf.readUInt16LE(chunkStart + 14);
-    } else if (chunkId === "data") {
-      dataOffset = chunkStart;
-      dataSize = Math.min(chunkSize, wavBuf.length - chunkStart);
-      break;
-    }
-    offset = chunkStart + chunkSize + (chunkSize % 2);
-  }
-
-  if (dataOffset < 0 || dataSize <= 0) {
-    throw new Error("WAV data chunk missing");
-  }
-
-  const bytesPerSample = Math.max(1, Math.floor(bitsPerSample / 8));
-  const totalFrames = Math.floor(dataSize / (bytesPerSample * Math.max(1, channels)));
-  const rawMono = new Float32Array(totalFrames);
-
-  for (let i = 0; i < totalFrames; i++) {
-    let sum = 0;
-    for (let ch = 0; ch < channels; ch++) {
-      const idx = dataOffset + (i * channels + ch) * bytesPerSample;
-      let s = 0;
-      if (audioFormat === 3 && bitsPerSample === 32 && idx + 4 <= wavBuf.length) {
-        s = wavBuf.readFloatLE(idx);
-      } else if (bitsPerSample === 16 && idx + 2 <= wavBuf.length) {
-        s = wavBuf.readInt16LE(idx) / 32768;
-      } else if (bitsPerSample === 8 && idx + 1 <= wavBuf.length) {
-        s = (wavBuf.readUInt8(idx) - 128) / 128;
-      }
-      sum += s;
-    }
-    rawMono[i] = sum / Math.max(1, channels);
-  }
-
-  if (sampleRate === 16000) {
-    return rawMono;
-  }
-
-  // Linear resample to 16000 Hz
-  const targetLen = Math.max(1, Math.round((totalFrames * 16000) / sampleRate));
-  const resampled = new Float32Array(targetLen);
-  const ratio = totalFrames / targetLen;
-  for (let i = 0; i < targetLen; i++) {
-    const pos = i * ratio;
-    const i0 = Math.floor(pos);
-    const i1 = Math.min(totalFrames - 1, i0 + 1);
-    const frac = pos - i0;
-    resampled[i] = rawMono[i0] * (1 - frac) + rawMono[i1] * frac;
-  }
-  return resampled;
-}
-
-async function decodeUploadedAudioTo16kMono(filePath) {
-  const tempWav = path.join(
-    os.tmpdir(),
-    `accent-norm-${Date.now()}-${Math.random().toString(36).slice(2)}.wav`
-  );
-
-  try {
-    await execFileAsync("ffmpeg", [
-      "-y",
-      "-i", filePath,
-      "-vn",
-      "-ac", "1",
-      "-ar", "16000",
-      "-c:a", "pcm_s16le",
-      tempWav
-    ]);
-    const wavBytes = await fs.promises.readFile(tempWav);
-    return decodeWavBuffer(wavBytes);
-  } catch (_) {
-    // Fallback if ffmpeg is unavailable or file is already WAV
-    const raw = await fs.promises.readFile(filePath);
-    return decodeWavBuffer(raw);
-  } finally {
-    await fs.promises.unlink(tempWav).catch(() => {});
-  }
-}
-
-function trimSilence(samples, sampleRate = 16000, threshold = 0.018, padMs = 80) {
-  if (!samples || samples.length === 0) return new Float32Array(1600);
-  let peak = 0;
-  for (let i = 0; i < samples.length; i++) {
-    const a = Math.abs(samples[i]);
-    if (a > peak) peak = a;
-  }
-  if (peak < 1e-5) return samples.slice(0, Math.min(samples.length, sampleRate));
-
-  const thresh = Math.max(threshold, peak * 0.08);
-  let start = 0;
-  let end = samples.length - 1;
-  while (start < samples.length && Math.abs(samples[start]) < thresh) start++;
-  while (end > start && Math.abs(samples[end]) < thresh) end--;
-
-  const pad = Math.round((padMs / 1000) * sampleRate);
-  start = Math.max(0, start - pad);
-  end = Math.min(samples.length - 1, end + pad);
-
-  const trimmed = samples.slice(start, end + 1);
-  return trimmed.length >= 400 ? trimmed : samples;
-}
-
-function normalizePeak(samples, targetPeak = 0.85) {
-  const out = new Float32Array(samples.length);
-  let maxVal = 0;
-  for (let i = 0; i < samples.length; i++) {
-    const v = Math.abs(samples[i]);
-    if (v > maxVal) maxVal = v;
-  }
-  const gain = maxVal > 1e-5 ? targetPeak / maxVal : 1;
-  for (let i = 0; i < samples.length; i++) {
-    out[i] = Math.max(-1, Math.min(1, samples[i] * gain));
-  }
-  return out;
-}
-
-// --------------------------------------------------
-// SYLLABLE ESTIMATION (ENGLISH WORD & ACOUSTIC PEAKS)
-// --------------------------------------------------
-
-function estimateWordSyllables(word) {
-  const clean = String(word || "")
-    .toLowerCase()
-    .replace(/[^a-z']/g, "");
-  if (!clean) return { count: 1, labels: ["Syl 1"], stressedIndex: 0 };
-
-  let base = clean.replace(/'/g, "");
-  if (base.length <= 3) {
-    return { count: 1, labels: [`${base} (1)`], stressedIndex: 0 };
-  }
-
-  base = base
-    .replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/i, "")
-    .replace(/^y/i, "");
-
-  const vowelGroups = base.match(/[aeiouy]{1,2}/g);
-  let count = vowelGroups ? vowelGroups.length : 1;
-  if (/(?:[^aeiouy]le|[^aeiouy]les)$/i.test(clean) && !/[aeiouy]{2}le$/i.test(clean)) {
-    count = Math.max(1, count);
-  }
-  count = Math.max(1, Math.min(6, count));
-
-  // Primary stress heuristic for common English words
-  let stressedIndex = 0;
-  if (count >= 2) {
-    if (/(?:tion|sion|ic|ical|ity|graphy|logy|metry)$/i.test(clean)) {
-      stressedIndex = Math.max(0, count - 2);
-    } else if (/^(?:re|un|in|im|dis|mis|de|pre|over|under|out|be|a)[a-z]/i.test(clean) && count >= 2) {
-      stressedIndex = 1;
-    } else {
-      stressedIndex = 0;
-    }
-  }
-
-  const labels = [];
-  for (let i = 0; i < count; i++) {
-    labels.push(i === stressedIndex ? `Syl ${i + 1} [STRESS]` : `Syl ${i + 1}`);
-  }
-  return { count, labels, stressedIndex };
-}
-
-function detectAcousticSyllableBoundaries(samples, sampleRate, expectedCount) {
-  const frameSize = Math.round(0.02 * sampleRate); // 20 ms
-  const hopSize = Math.round(0.01 * sampleRate);   // 10 ms
-  const energies = [];
-
-  for (let start = 0; start + frameSize <= samples.length; start += hopSize) {
-    let sumSq = 0;
-    for (let i = 0; i < frameSize; i++) {
-      const v = samples[start + i];
-      sumSq += v * v;
-    }
-    const rms = Math.sqrt(sumSq / frameSize);
-    const db = 20 * Math.log10(Math.max(rms, 1e-6));
-    energies.push(db);
-  }
-
-  if (energies.length === 0) {
-    return [[0, samples.length]];
-  }
-
-  // Smooth energy contour
-  const smooth = energies.map((_, idx) => {
-    const lo = Math.max(0, idx - 2);
-    const hi = Math.min(energies.length - 1, idx + 2);
-    let acc = 0;
-    for (let k = lo; k <= hi; k++) acc += energies[k];
-    return acc / (hi - lo + 1);
-  });
-
-  // Find local maxima (syllable nuclei)
-  const peaks = [];
-  for (let i = 2; i < smooth.length - 2; i++) {
-    if (
-      smooth[i] >= smooth[i - 1] &&
-      smooth[i] >= smooth[i + 1] &&
-      smooth[i] >= smooth[i - 2] &&
-      smooth[i] >= smooth[i + 2] &&
-      smooth[i] > -42
-    ) {
-      if (peaks.length === 0 || i - peaks[peaks.length - 1].idx >= 8) {
-        peaks.push({ idx: i, db: smooth[i] });
-      } else if (smooth[i] > peaks[peaks.length - 1].db) {
-        peaks[peaks.length - 1] = { idx: i, db: smooth[i] };
-      }
-    }
-  }
-
-  let boundsFrameIdx = [];
-  if (peaks.length === expectedCount) {
-    boundsFrameIdx.push(0);
-    for (let p = 0; p < peaks.length - 1; p++) {
-      let minIdx = peaks[p].idx;
-      let minVal = smooth[minIdx];
-      for (let k = peaks[p].idx; k <= peaks[p + 1].idx; k++) {
-        if (smooth[k] < minVal) {
-          minVal = smooth[k];
-          minIdx = k;
-        }
-      }
-      boundsFrameIdx.push(minIdx);
-    }
-    boundsFrameIdx.push(smooth.length - 1);
-  } else {
-    // Evenly divide acoustic duration into expected syllables
-    for (let s = 0; s <= expectedCount; s++) {
-      boundsFrameIdx.push(Math.round((s / expectedCount) * (smooth.length - 1)));
-    }
-  }
-
-  const segments = [];
-  for (let s = 0; s < expectedCount; s++) {
-    const startSample = Math.min(samples.length, boundsFrameIdx[s] * hopSize);
-    const endSample =
-      s === expectedCount - 1
-        ? samples.length
-        : Math.min(samples.length, Math.max(startSample + 1, boundsFrameIdx[s + 1] * hopSize));
-    segments.push([startSample, Math.max(startSample + 1, endSample)]);
-  }
-  return segments;
-}
-
-// --------------------------------------------------
-// ACOUSTIC ANALYSIS: PITCH (F0), FORMANT ENVELOPE, SPECTROGRAM
-// --------------------------------------------------
-
-function estimatePitchFrame(frame, sampleRate) {
-  // Autocorrelation pitch tracker for speech (75 Hz - 420 Hz)
-  let rms = 0;
-  for (let i = 0; i < frame.length; i++) rms += frame[i] * frame[i];
-  rms = Math.sqrt(rms / frame.length);
-  if (rms < 0.015) return null;
-
-  const minLag = Math.floor(sampleRate / 420);
-  const maxLag = Math.min(frame.length - 2, Math.floor(sampleRate / 75));
-  if (maxLag <= minLag) return null;
-
-  let bestLag = -1;
-  let bestCorr = 0;
-  let energy0 = 0;
-  for (let i = 0; i < frame.length; i++) energy0 += frame[i] * frame[i];
-  if (energy0 < 1e-8) return null;
-
-  for (let lag = minLag; lag <= maxLag; lag++) {
-    let corr = 0;
-    let energyLag = 0;
-    for (let i = 0; i < frame.length - lag; i++) {
-      const a = frame[i];
-      const b = frame[i + lag];
-      corr += a * b;
-      energyLag += b * b;
-    }
-    const normCorr = corr / Math.sqrt(energy0 * Math.max(energyLag, 1e-8));
-    if (normCorr > bestCorr) {
-      bestCorr = normCorr;
-      bestLag = lag;
-    }
-  }
-
-  if (bestLag > 0 && bestCorr >= 0.45) {
-    return sampleRate / bestLag;
-  }
-  return null;
-}
-
-function computeSpectrumAndFormants(frame, sampleRate = 16000, numBins = 128) {
-  // Hann-windowed DFT magnitude bins up to Nyquist (8000 Hz)
-  const N = frame.length;
-  const mags = new Float32Array(numBins);
-
-  // Pre-emphasis filter to make F2/F3 peaks clearer
-  const pre = new Float32Array(N);
-  pre[0] = frame[0];
-  for (let i = 1; i < N; i++) {
-    pre[i] = frame[i] - 0.94 * frame[i - 1];
-  }
-
-  for (let k = 0; k < numBins; k++) {
-    // Map bin k to frequency in [0, sampleRate/2]
-    const freq = (k / numBins) * (sampleRate / 2);
-    const omega = (2 * Math.PI * freq) / sampleRate;
-    let re = 0;
-    let im = 0;
-    // Subsample step for fast real-time server execution
-    const step = N > 512 ? 2 : 1;
-    for (let n = 0; n < N; n += step) {
-      const win = 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / Math.max(1, N - 1));
-      const x = pre[n] * win;
-      re += x * Math.cos(omega * n);
-      im -= x * Math.sin(omega * n);
-    }
-    mags[k] = Math.sqrt(re * re + im * im) / Math.max(1, N / step);
-  }
-
-  // Smooth spectral envelope to pick formant peaks (F1: 250-1100 Hz, F2: 750-2600 Hz, F3: 1700-3600 Hz)
-  const env = new Float32Array(numBins);
-  for (let k = 0; k < numBins; k++) {
-    const lo = Math.max(0, k - 3);
-    const hi = Math.min(numBins - 1, k + 3);
-    let s = 0;
-    for (let j = lo; j <= hi; j++) s += mags[j];
-    env[k] = s / (hi - lo + 1);
-  }
-
-  const binToHz = k => (k / numBins) * (sampleRate / 2);
-  const hzToBin = hz => Math.max(1, Math.min(numBins - 2, Math.round((hz / (sampleRate / 2)) * numBins)));
-
-  function peakInBand(minHz, maxHz, fallbackHz) {
-    const lo = hzToBin(minHz);
-    const hi = hzToBin(maxHz);
-    let bestBin = -1;
-    let bestVal = -1;
-    for (let k = lo; k <= hi; k++) {
-      if (env[k] > bestVal) {
-        bestVal = env[k];
-        bestBin = k;
-      }
-    }
-    return bestBin > 0 && bestVal > 1e-6 ? Math.round(binToHz(bestBin)) : fallbackHz;
-  }
-
-  const f1 = peakInBand(260, 1050, 520);
-  const f2 = Math.max(f1 + 350, peakInBand(850, 2550, 1550));
-  const f3 = Math.max(f2 + 350, peakInBand(1750, 3500, 2550));
-
-  // Normalize spectrogram row to [0..1] dB scale
-  const normRow = Array.from(mags).map(m => {
-    const db = 20 * Math.log10(Math.max(m, 1e-6));
-    return Math.max(0, Math.min(1, (db + 75) / 55));
-  });
-
-  // Compact 13-band MFCC-like cepstral summary for DTW alignment
-  const mfcc = [];
-  const bands = 13;
-  const binsPerBand = Math.max(1, Math.floor(numBins / bands));
-  for (let b = 0; b < bands; b++) {
-    let sum = 0;
-    for (let j = 0; j < binsPerBand; j++) {
-      sum += normRow[b * binsPerBand + j] || 0;
-    }
-    mfcc.push(sum / binsPerBand);
-  }
-
-  return { f1, f2, f3, normRow, mfcc };
-}
-
-function analyzeSignal(samples, sampleRate = 16000, wordText = "word") {
-  const frameLen = Math.round(0.025 * sampleRate); // 25 ms
-  const hopLen = Math.round(0.0125 * sampleRate); // 12.5 ms
-  const numFrames = Math.max(1, Math.floor((samples.length - frameLen) / hopLen) + 1);
-
-  const pitchHz = [];
-  const intensityDb = [];
-  const f1Hz = [];
-  const f2Hz = [];
-  const f3Hz = [];
-  const spectrogram = [];
-  const mfccFrames = [];
-
-  for (let f = 0; f < numFrames; f++) {
-    const start = Math.min(samples.length - 1, f * hopLen);
-    const frame = new Float32Array(frameLen);
-    let sumSq = 0;
-    for (let i = 0; i < frameLen; i++) {
-      const v = samples[start + i] || 0;
-      frame[i] = v;
-      sumSq += v * v;
-    }
-    const rms = Math.sqrt(sumSq / frameLen);
-    const db = Number((20 * Math.log10(Math.max(rms, 1e-6))).toFixed(1));
-    intensityDb.push(db);
-
-    const f0 = estimatePitchFrame(frame, sampleRate);
-    pitchHz.push(f0 ? Math.round(f0) : null);
-
-    const spec = computeSpectrumAndFormants(frame, sampleRate, 96);
-    f1Hz.push(spec.f1);
-    f2Hz.push(spec.f2);
-    f3Hz.push(spec.f3);
-    spectrogram.push(spec.normRow);
-    mfccFrames.push(spec.mfcc);
-  }
-
-  // Downsampled waveform envelope for clean canvas plotting (180 points)
-  const wavePoints = [];
-  const targetWaveLen = 180;
-  const blockSize = Math.max(1, Math.floor(samples.length / targetWaveLen));
-  for (let i = 0; i < targetWaveLen; i++) {
-    const sIdx = Math.min(samples.length - 1, i * blockSize);
-    const eIdx = Math.min(samples.length, sIdx + blockSize);
-    let minV = 0;
-    let maxV = 0;
-    for (let j = sIdx; j < eIdx; j++) {
-      const v = samples[j];
-      if (v < minV) minV = v;
-      if (v > maxV) maxV = v;
-    }
-    wavePoints.push([Number(minV.toFixed(3)), Number(maxV.toFixed(3))]);
-  }
-
-  const voiced = pitchHz.filter(v => typeof v === "number");
-  const avgF0 = voiced.length
-    ? Math.round(voiced.reduce((a, b) => a + b, 0) / voiced.length)
-    : 0;
-  const minF0 = voiced.length ? Math.min(...voiced) : 0;
-  const maxF0 = voiced.length ? Math.max(...voiced) : 0;
-
-  const avg = arr => Math.round(arr.reduce((a, b) => a + b, 0) / Math.max(1, arr.length));
-  const avgF1 = avg(f1Hz);
-  const avgF2 = avg(f2Hz);
-  const avgF3 = avg(f3Hz);
-  const maxDb = Number(Math.max(...intensityDb).toFixed(1));
-  const durationMs = Math.round((samples.length / sampleRate) * 1000);
-
-  // Syllable segmentation and per-syllable metrics
-  const sylMeta = estimateWordSyllables(wordText);
-  const segments = detectAcousticSyllableBoundaries(samples, sampleRate, sylMeta.count);
-
-  const syllables = segments.map(([sStart, sEnd], idx) => {
-    const segSamples = samples.slice(sStart, sEnd);
-    let sq = 0;
-    for (let i = 0; i < segSamples.length; i++) sq += segSamples[i] * segSamples[i];
-    const segDb = Number((20 * Math.log10(Math.max(Math.sqrt(sq / Math.max(1, segSamples.length)), 1e-6))).toFixed(1));
-
-    const fStart = Math.min(numFrames - 1, Math.floor((sStart / Math.max(1, samples.length)) * numFrames));
-    const fEnd = Math.max(fStart + 1, Math.min(numFrames, Math.ceil((sEnd / Math.max(1, samples.length)) * numFrames)));
-    const segPitch = pitchHz.slice(fStart, fEnd).filter(v => typeof v === "number");
-    const segF0 = segPitch.length
-      ? Math.round(segPitch.reduce((a, b) => a + b, 0) / segPitch.length)
-      : avgF0;
-    const segF1 = avg(f1Hz.slice(fStart, fEnd));
-    const segF2 = avg(f2Hz.slice(fStart, fEnd));
-
-    return {
-      index: idx + 1,
-      label: sylMeta.labels[idx] || `Syl ${idx + 1}`,
-      isStressed: idx === sylMeta.stressedIndex,
-      startMs: Math.round((sStart / sampleRate) * 1000),
-      endMs: Math.round((sEnd / sampleRate) * 1000),
-      durationMs: Math.round(((sEnd - sStart) / sampleRate) * 1000),
-      peakDb: segDb,
-      meanF0: segF0,
-      meanF1: segF1,
-      meanF2: segF2
-    };
-  });
-
-  return {
-    durationMs,
-    avgF0,
-    minF0,
-    maxF0,
-    avgF1,
-    avgF2,
-    avgF3,
-    maxDb,
-    wavePoints,
-    pitchHz,
-    intensityDb,
-    f1Hz,
-    f2Hz,
-    f3Hz,
-    spectrogram,
-    mfccFrames,
-    syllables
-  };
-}
-
-// --------------------------------------------------
-// DYNAMIC TIME WARPING (DTW) & SYLLABLE MATCHING
-// --------------------------------------------------
-
-function euclidean(a, b) {
-  let sum = 0;
-  const len = Math.min(a.length, b.length);
-  for (let i = 0; i < len; i++) {
-    const d = a[i] - b[i];
-    sum += d * d;
-  }
-  return Math.sqrt(sum / Math.max(1, len));
-}
-
-function alignWithDTW(refAnalysis, userAnalysis) {
-  const rSeq = refAnalysis.mfccFrames;
-  const uSeq = userAnalysis.mfccFrames;
-  const n = rSeq.length;
-  const m = uSeq.length;
-
-  const cost = Array.from({ length: n + 1 }, () => Array(m + 1).fill(Infinity));
-  cost[0][0] = 0;
-
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      const d = euclidean(rSeq[i - 1], uSeq[j - 1]);
-      const prev = Math.min(cost[i - 1][j], cost[i][j - 1], cost[i - 1][j - 1]);
-      cost[i][j] = d + prev;
-    }
-  }
-
-  const pathPairs = [];
-  let i = n;
-  let j = m;
-  while (i > 0 && j > 0) {
-    pathPairs.unshift([i - 1, j - 1]);
-    const diag = cost[i - 1][j - 1];
-    const up = cost[i - 1][j];
-    const left = cost[i][j - 1];
-    if (diag <= up && diag <= left) {
-      i--;
-      j--;
-    } else if (up < left) {
-      i--;
-    } else {
-      j--;
-    }
-  }
-
-  const avgDtwDistance = Number((cost[n][m] / Math.max(1, pathPairs.length)).toFixed(3));
-
-  // Build aligned frame series for side-by-side visual comparison
-  const alignedRefPitch = [];
-  const alignedUserPitch = [];
-  const alignedRefF1 = [];
-  const alignedUserF1 = [];
-  const alignedRefF2 = [];
-  const alignedUserF2 = [];
-  const alignedRefF3 = [];
-  const alignedUserF3 = [];
-  const alignedRefDb = [];
-  const alignedUserDb = [];
-  const alignedRefSpec = [];
-  const alignedUserSpec = [];
-
-  // Normalize pitch relative to each speaker's mean F0 so vocal-tract pitch floor doesn't artificially penalize
-  const refBaseF0 = refAnalysis.avgF0 || 160;
-  const userBaseF0 = userAnalysis.avgF0 || 160;
-
-  let pitchSemitoneDiffSum = 0;
-  let pitchSemitoneCount = 0;
-  let formantNormDiffSum = 0;
-
-  for (const [ri, ui] of pathPairs) {
-    alignedRefPitch.push(refAnalysis.pitchHz[ri]);
-    alignedUserPitch.push(userAnalysis.pitchHz[ui]);
-    alignedRefF1.push(refAnalysis.f1Hz[ri]);
-    alignedUserF1.push(userAnalysis.f1Hz[ui]);
-    alignedRefF2.push(refAnalysis.f2Hz[ri]);
-    alignedUserF2.push(userAnalysis.f2Hz[ui]);
-    alignedRefF3.push(refAnalysis.f3Hz[ri]);
-    alignedUserF3.push(userAnalysis.f3Hz[ui]);
-    alignedRefDb.push(refAnalysis.intensityDb[ri]);
-    alignedUserDb.push(userAnalysis.intensityDb[ui]);
-    alignedRefSpec.push(refAnalysis.spectrogram[ri]);
-    alignedUserSpec.push(userAnalysis.spectrogram[ui]);
-
-    const f1Diff = Math.abs(refAnalysis.f1Hz[ri] - userAnalysis.f1Hz[ui]) / 700;
-    const f2Diff = Math.abs(refAnalysis.f2Hz[ri] - userAnalysis.f2Hz[ui]) / 1600;
-    formantNormDiffSum += (f1Diff + f2Diff) / 2;
-
-    if (refAnalysis.pitchHz[ri] && userAnalysis.pitchHz[ui]) {
-      const refRel = refAnalysis.pitchHz[ri] / refBaseF0;
-      const usrRel = userAnalysis.pitchHz[ui] / userBaseF0;
-      const semitones = Math.abs(12 * Math.log2(Math.max(0.4, Math.min(2.5, refRel / usrRel))));
-      pitchSemitoneDiffSum += semitones;
-      pitchSemitoneCount++;
-    }
-  }
-
-  const steps = Math.max(1, pathPairs.length);
-  const avgFormantErr = formantNormDiffSum / steps;
-  const avgPitchSemitoneErr = pitchSemitoneCount > 0 ? pitchSemitoneDiffSum / pitchSemitoneCount : 1.5;
-
-  // Convert DTW spectral distance, formant proximity, and relative pitch contour into 0-100 match score
-  const spectralScore = Math.max(0, Math.min(100, (1 - avgDtwDistance / 0.42) * 100));
-  const formantScore = Math.max(0, Math.min(100, (1 - avgFormantErr / 0.45) * 100));
-  const prosodyScore = Math.max(0, Math.min(100, (1 - avgPitchSemitoneErr / 5.0) * 100));
-
-  const overallScore = Number(
-    (spectralScore * 0.5 + formantScore * 0.3 + prosodyScore * 0.2).toFixed(1)
-  );
-
-  // Per-syllable comparison & pinpointing which syllable needs self-correction
-  const sylCount = Math.max(refAnalysis.syllables.length, userAnalysis.syllables.length);
-  const syllableComparisons = [];
-
-  for (let idx = 0; idx < sylCount; idx++) {
-    const rSyl = refAnalysis.syllables[idx] || refAnalysis.syllables[refAnalysis.syllables.length - 1];
-    const uSyl = userAnalysis.syllables[idx] || null;
-
-    if (!uSyl) {
-      syllableComparisons.push({
-        syllableNumber: idx + 1,
-        label: rSyl.label,
-        isStressed: rSyl.isStressed,
-        matchScore: 25,
-        status: "Missing / Clipped",
-        refDurationMs: rSyl.durationMs,
-        userDurationMs: 0,
-        f1DiffHz: rSyl.meanF1,
-        f2DiffHz: rSyl.meanF2,
-        dbDiff: Number((rSyl.peakDb + 50).toFixed(1)),
-        tip: `Syllable ${idx + 1} was not clearly detected—articulate this syllable more distinctly.`
-      });
-      continue;
-    }
-
-    const durRatioErr = Math.abs(uSyl.durationMs - rSyl.durationMs) / Math.max(80, rSyl.durationMs);
-    const f1DiffHz = Math.abs(uSyl.meanF1 - rSyl.meanF1);
-    const f2DiffHz = Math.abs(uSyl.meanF2 - rSyl.meanF2);
-    const dbDiff = Number(Math.abs(uSyl.peakDb - rSyl.peakDb).toFixed(1));
-
-    const sylPenalty =
-      Math.min(45, (f1DiffHz / 500) * 22 + (f2DiffHz / 1200) * 23) +
-      Math.min(30, durRatioErr * 25) +
-      Math.min(25, (dbDiff / 18) * 20);
-
-    const matchScore = Number(Math.max(10, Math.min(99, 100 - sylPenalty)).toFixed(1));
-
-    let status = "Close Match";
-    if (matchScore < 65) status = "Needs Focus";
-    else if (matchScore < 82) status = "Fair — Refine";
-
-    let tip = "Good alignment on this syllable.";
-    if (f2DiffHz > 380 || f1DiffHz > 180) {
-      tip = `Adjust vowel tongue position (F1 ${uSyl.meanF1} Hz vs ref ${rSyl.meanF1} Hz, F2 ${uSyl.meanF2} Hz vs ref ${rSyl.meanF2} Hz).`;
-    } else if (durRatioErr > 0.35) {
-      tip =
-        uSyl.durationMs < rSyl.durationMs
-          ? `Hold Syllable ${idx + 1} slightly longer (${uSyl.durationMs} ms vs ref ${rSyl.durationMs} ms).`
-          : `Trim extra length on Syllable ${idx + 1} (${uSyl.durationMs} ms vs ref ${rSyl.durationMs} ms).`;
-    } else if (dbDiff > 6) {
-      tip =
-        uSyl.peakDb < rSyl.peakDb
-          ? `Give Syllable ${idx + 1} stronger vocal projection/stress.`
-          : `Ease off excessive loudness on Syllable ${idx + 1}.`;
-    }
-
-    syllableComparisons.push({
-      syllableNumber: idx + 1,
-      label: rSyl.label,
-      isStressed: rSyl.isStressed,
-      matchScore,
-      status,
-      refDurationMs: rSyl.durationMs,
-      userDurationMs: uSyl.durationMs,
-      f1DiffHz,
-      f2DiffHz,
-      dbDiff,
-      tip
-    });
-  }
-
-  let focusSyllable = null;
-  if (syllableComparisons.length > 0) {
-    focusSyllable = syllableComparisons.reduce((worst, cur) =>
-      cur.matchScore < worst.matchScore ? cur : worst
-    );
-  }
-
-  return {
-    overallScore,
-    spectralScore: Number(spectralScore.toFixed(1)),
-    formantScore: Number(formantScore.toFixed(1)),
-    prosodyScore: Number(prosodyScore.toFixed(1)),
-    avgDtwDistance,
-    syllableCount: sylCount,
-    focusSyllable,
-    syllableComparisons,
-    alignedVisuals: {
-      alignedRefPitch,
-      alignedUserPitch,
-      alignedRefF1,
-      alignedUserF1,
-      alignedRefF2,
-      alignedUserF2,
-      alignedRefF3,
-      alignedUserF3,
-      alignedRefDb,
-      alignedUserDb,
-      alignedRefSpec,
-      alignedUserSpec
-    }
-  };
-}
-
-// --------------------------------------------------
-// REFERENCE AUDIO PROVIDER (OPENAI TTS -> SYNTH FALLBACK)
-// --------------------------------------------------
-
-function synthesizeFallbackReferenceWord(word, sampleRate = 16000) {
-  const syl = estimateWordSyllables(word);
-  const sylDurationSec = 0.24;
-  const totalSec = Math.max(0.35, syl.count * sylDurationSec + 0.08);
+function synthesizeFallbackReferenceWord(phoneticPlan, sampleRate = 16000) {
+  const syls = phoneticPlan.syllables;
+  const sylDurSec = 0.23;
+  const totalSec = Math.max(0.35, syls.length * sylDurSec + 0.06);
   const totalSamples = Math.round(totalSec * sampleRate);
   const out = new Float32Array(totalSamples);
 
-  const lower = String(word || "word").toLowerCase();
-  const hasR = /r/.test(lower);
-  const hasSibilant = /[szx]|sh|ch|th/.test(lower);
-
-  for (let s = 0; s < syl.count; s++) {
-    const startIdx = Math.floor((s * sylDurationSec) * sampleRate);
-    const endIdx = Math.min(totalSamples, Math.floor(((s + 1) * sylDurationSec) * sampleRate));
+  syls.forEach((syl, sIdx) => {
+    const startIdx = Math.floor(sIdx * sylDurSec * sampleRate);
+    const endIdx = Math.min(totalSamples, Math.floor((sIdx + 1) * sylDurSec * sampleRate));
     const len = Math.max(1, endIdx - startIdx);
-    const isStressed = s === syl.stressedIndex;
-    const baseF0 = isStressed ? 168 : 138;
-    const f1 = isStressed ? 620 : 480;
-    const f2 = hasR ? 1320 : isStressed ? 1620 : 1450;
-    const f3 = hasR ? 1850 : 2580;
-    const amp = isStressed ? 0.78 : 0.46;
+    const isStressed = syl.stress === 1;
+    const vm = syl.vowelMeta || { f1: 500, f2: 1500 };
+    const baseF0 = isStressed ? 165 : 135;
+    const amp = isStressed ? 0.78 : 0.48;
 
     for (let i = 0; i < len; i++) {
+      const progress = i / len;
       const t = i / sampleRate;
-      const env = Math.sin(Math.PI * Math.min(1, i / len));
-      const f0 = baseF0 * (1 - 0.14 * (i / len));
+      const env = Math.sin(Math.PI * Math.min(1, progress));
+      const f0 = baseF0 * (1 - 0.12 * progress);
+      const f1 = vm.diphthong && vm.endF1 ? vm.f1 + (vm.endF1 - vm.f1) * progress : vm.f1;
+      const f2 = vm.diphthong && vm.endF2 ? vm.f2 + (vm.endF2 - vm.f2) * progress : vm.f2;
+      const f3 = phoneticPlan.hasRhotic ? 1850 : 2580;
+
       const phase = 2 * Math.PI * f0 * t;
+      const pulse = Math.sin(phase) + 0.55 * Math.sin(2 * phase) + 0.3 * Math.sin(3 * phase);
+      const formants =
+        0.52 * Math.sin(2 * Math.PI * f1 * t) +
+        0.32 * Math.sin(2 * Math.PI * f2 * t) +
+        0.16 * Math.sin(2 * Math.PI * f3 * t);
 
-      // Glottal pulse + formant resonators
-      const pulse =
-        Math.sin(phase) +
-        0.55 * Math.sin(2 * phase) +
-        0.3 * Math.sin(3 * phase);
-      const formantWave =
-        0.5 * Math.sin(2 * Math.PI * f1 * t) +
-        0.3 * Math.sin(2 * Math.PI * f2 * t) +
-        0.2 * Math.sin(2 * Math.PI * f3 * t);
-      const fric = hasSibilant ? (Math.random() * 2 - 1) * 0.12 : 0;
-
-      out[startIdx + i] = (pulse * 0.45 + formantWave + fric) * env * amp;
+      out[startIdx + i] = (pulse * 0.45 + formants) * env * amp;
     }
-  }
+  });
 
   return normalizePeak(trimSilence(out, sampleRate), 0.85);
 }
 
-async function getAmericanReferenceSamples(word, voice = "alloy") {
+
+const { execFile } = require("child_process");
+const { promisify } = require("util");
+const execFileAsync = promisify(execFile);
+
+const BANK_DIR = path.join(DATA_DIR, "accent-ref-bank");
+fs.mkdirSync(BANK_DIR, { recursive: true });
+
+async function synthesizeOfflineWordTo16kMono(cleanWord, voice = "Samantha") {
+  const stamp = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const rawOutPath = path.join(os.tmpdir(), `offline-ref-${stamp}`);
+  const cleanupPaths = [rawOutPath];
+
+  try {
+    if (process.platform === "darwin") {
+      const aiffPath = `${rawOutPath}.aiff`;
+      cleanupPaths.push(aiffPath);
+      const macVoice = ["Samantha", "Alex", "Allison", "Ava"].includes(voice) ? voice : "Samantha";
+      await execFileAsync("say", ["-v", macVoice, "-o", aiffPath, cleanWord]);
+      const decoded = await decodeUploadedAudioTo16kMono(aiffPath);
+      return {
+        samples: normalizePeak(trimSilence(decoded, 16000), 0.85),
+        source: `offline-macos-say (${macVoice})`
+      };
+    }
+
+    if (process.platform === "win32") {
+      const psWavPath = `${rawOutPath}.wav`;
+      cleanupPaths.push(psWavPath);
+      const safeWord = cleanWord.replace(/'/g, "''");
+      const psScript = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; $s.Rate = 0; $s.SetOutputToWaveFile('${psWavPath.replace(/'/g, "''")}'); $s.Speak('${safeWord}'); $s.Dispose();`;
+      await execFileAsync("powershell", ["-NoProfile", "-Command", psScript]);
+      const decoded = await decodeUploadedAudioTo16kMono(psWavPath);
+      return {
+        samples: normalizePeak(trimSilence(decoded, 16000), 0.85),
+        source: "offline-windows-sapi"
+      };
+    }
+
+    // Linux: prefer piper if available, otherwise espeak-ng
+    const linuxWavPath = `${rawOutPath}.wav`;
+    cleanupPaths.push(linuxWavPath);
+    if (process.env.PIPER_MODEL) {
+      await execFileAsync("sh", [
+        "-c",
+        `printf %s "$1" | piper --model "$2" --output_file "$3"`,
+        "--",
+        cleanWord,
+        process.env.PIPER_MODEL,
+        linuxWavPath
+      ]);
+      const decoded = await decodeUploadedAudioTo16kMono(linuxWavPath);
+      return {
+        samples: normalizePeak(trimSilence(decoded, 16000), 0.85),
+        source: "offline-piper-tts"
+      };
+    }
+
+    await execFileAsync("espeak-ng", ["-v", "en-us", "-w", linuxWavPath, cleanWord]);
+    const decoded = await decodeUploadedAudioTo16kMono(linuxWavPath);
+    return {
+      samples: normalizePeak(trimSilence(decoded, 16000), 0.85),
+      source: "offline-espeak-ng (en-us)"
+    };
+  } finally {
+    await Promise.all(cleanupPaths.map(p => fs.promises.unlink(p).catch(() => {})));
+  }
+}
+
+async function getAmericanReferenceSamples(word, voice = "Samantha", phoneticPlan) {
   const cleanWord = String(word || "").trim().toLowerCase();
-  const hash = crypto.createHash("sha256").update(`en-US:${voice}:${cleanWord}`).digest("hex").slice(0, 16);
+  const safeSlug = cleanWord.replace(/[^a-z0-9_-]/g, "_");
+  const hash = crypto
+    .createHash("sha256")
+    .update(`offline-en-US:${voice}:${cleanWord}`)
+    .digest("hex")
+    .slice(0, 16);
+
   const cachedWavPath = path.join(REF_DIR, `ref-${hash}.wav`);
   const publicUrl = `/american-accent/audio/ref/ref-${hash}.wav`;
 
@@ -846,92 +158,71 @@ async function getAmericanReferenceSamples(word, voice = "alloy") {
     return {
       samples: decodeWavBuffer(buf),
       audioUrl: publicUrl,
-      source: "cached-american-reference"
+      source: `cached-offline-ref (${voice})`
     };
   }
 
-  if (process.env.OPENAI_API_KEY) {
-    try {
-      const ttsModel = process.env.OPENAI_TTS_MODEL || "gpt-4o-mini-tts";
-      const response = await fetch("https://api.openai.com/v1/audio/speech", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: ttsModel,
-          voice,
-          input: cleanWord,
-          instructions: "Pronounce this single English word clearly in a natural General American accent.",
-          response_format: "wav"
-        })
-      });
-
-      if (response.ok) {
-        const arrayBuf = await response.arrayBuffer();
-        const rawWav = Buffer.from(arrayBuf);
-        const decoded = decodeWavBuffer(rawWav);
-        const trimmed = normalizePeak(trimSilence(decoded, 16000), 0.85);
-        await fs.promises.writeFile(cachedWavPath, encodeWav16kMono(trimmed));
-        return {
-          samples: trimmed,
-          audioUrl: publicUrl,
-          source: `openai-tts (${ttsModel}, ${voice})`
-        };
-      }
-    } catch (err) {
-      console.warn("TTS reference fallback triggered:", err.message);
-    }
+  // 1. Check pre-recorded local bank files first (e.g., data/accent-ref-bank/pronunciation.wav)
+  const bankCandidates = [".wav", ".mp3", ".m4a", ".ogg", ".webm"].map(ext =>
+    path.join(BANK_DIR, `${safeSlug}${ext}`)
+  );
+  const existingBankFile = bankCandidates.find(p => fs.existsSync(p));
+  if (existingBankFile) {
+    const decoded = await decodeUploadedAudioTo16kMono(existingBankFile);
+    const trimmed = normalizePeak(trimSilence(decoded, 16000), 0.85);
+    await fs.promises.writeFile(cachedWavPath, encodeWav16kMono(trimmed));
+    return {
+      samples: trimmed,
+      audioUrl: publicUrl,
+      source: `local-audio-bank (${path.basename(existingBankFile)})`
+    };
   }
 
-  const synth = synthesizeFallbackReferenceWord(cleanWord, 16000);
-  await fs.promises.writeFile(cachedWavPath, encodeWav16kMono(synth));
+  // 2. Synthesize offline using local OS TTS + ffmpeg pipeline (no API calls)
+  const offlineRes = await synthesizeOfflineWordTo16kMono(cleanWord, voice);
+  await fs.promises.writeFile(cachedWavPath, encodeWav16kMono(offlineRes.samples));
   return {
-    samples: synth,
+    samples: offlineRes.samples,
     audioUrl: publicUrl,
-    source: "built-in-formant-synthesizer (no API key / offline fallback)"
+    source: offlineRes.source
   };
 }
 
-// --------------------------------------------------
-// API ROUTES
-// --------------------------------------------------
 
 router.use("/audio/ref", express.static(REF_DIR));
 router.use("/audio/user", express.static(USER_DIR));
 
 router.post("/api/compare", upload.single("audio"), async (req, res) => {
   try {
-    const word = String(req.body?.word || "").trim();
-    const voice = String(req.body?.voice || "alloy").trim();
+    const word = String(req.body && req.body.word ? req.body.word : "").trim();
+    const voice = String(req.body && req.body.voice ? req.body.voice : "alloy").trim();
 
-    if (!word) {
-      return res.status(400).json({ error: "Please enter a target word." });
-    }
-    if (!req.file) {
-      return res.status(400).json({ error: "Please record your pronunciation first." });
-    }
+    if (!word) return res.status(400).json({ error: "Please enter a target word." });
+    if (!req.file) return res.status(400).json({ error: "Please record your pronunciation first." });
+
+    const phoneticPlan = getWordPhoneticPlan(word);
 
     const rawUser = await decodeUploadedAudioTo16kMono(req.file.path);
     const cleanUser = normalizePeak(trimSilence(rawUser, 16000), 0.85);
 
-    const userId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const userWavName = `user-${userId}.wav`;
+    const userId = Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    const userWavName = "user-" + userId + ".wav";
     await fs.promises.writeFile(path.join(USER_DIR, userWavName), encodeWav16kMono(cleanUser));
 
-    const ref = await getAmericanReferenceSamples(word, voice);
+    const ref = await getAmericanReferenceSamples(word, voice, phoneticPlan);
 
-    const referenceAnalysis = analyzeSignal(ref.samples, 16000, word);
-    const userAnalysis = analyzeSignal(cleanUser, 16000, word);
-    const comparison = alignWithDTW(referenceAnalysis, userAnalysis);
+    const referenceAnalysis = analyzeSignal(ref.samples, 16000);
+    const userAnalysis = analyzeSignal(cleanUser, 16000);
+    const dtwResult = computeDtwPath(referenceAnalysis, userAnalysis);
+    const comparison = runFullDiagnosis(phoneticPlan, referenceAnalysis, userAnalysis, dtwResult);
 
     return res.json({
       success: true,
-      word,
+      word: word,
+      ipa: phoneticPlan.ipa,
       referenceSource: ref.source,
       referenceAudioUrl: ref.audioUrl,
-      userAudioUrl: `/american-accent/audio/user/${userWavName}`,
+      userAudioUrl: "/american-accent/audio/user/" + userWavName,
       referenceMetrics: {
         durationMs: referenceAnalysis.durationMs,
         avgF0: referenceAnalysis.avgF0,
@@ -941,8 +232,7 @@ router.post("/api/compare", upload.single("audio"), async (req, res) => {
         avgF2: referenceAnalysis.avgF2,
         avgF3: referenceAnalysis.avgF3,
         maxDb: referenceAnalysis.maxDb,
-        wavePoints: referenceAnalysis.wavePoints,
-        syllables: referenceAnalysis.syllables
+        wavePoints: referenceAnalysis.wavePoints
       },
       userMetrics: {
         durationMs: userAnalysis.durationMs,
@@ -953,615 +243,563 @@ router.post("/api/compare", upload.single("audio"), async (req, res) => {
         avgF2: userAnalysis.avgF2,
         avgF3: userAnalysis.avgF3,
         maxDb: userAnalysis.maxDb,
-        wavePoints: userAnalysis.wavePoints,
-        syllables: userAnalysis.syllables
+        wavePoints: userAnalysis.wavePoints
       },
-      comparison
+      comparison: comparison
     });
   } catch (err) {
     console.error("Word accent comparison error:", err);
-    return res.status(500).json({
-      error: "Failed to compare word pronunciation.",
-      details: err.message
-    });
+    return res.status(500).json({ error: "Failed to compare word pronunciation.", details: err.message });
   } finally {
-    if (req.file?.path) {
-      await fs.promises.unlink(req.file.path).catch(() => {});
+    if (req.file && req.file.path) {
+      await fs.promises.unlink(req.file.path).catch(function () {});
     }
   }
 });
 
-// --------------------------------------------------
-// STANDALONE WORD-LEVEL SELF-CORRECTION PAGE
-// --------------------------------------------------
+router.get(["/", ""], function (req, res) {
+  res.type("html").send(
+    "<!DOCTYPE html>" +
+    "<html lang=\"en\">" +
+    "<head>" +
+    "<meta charset=\"UTF-8\" />" +
+    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />" +
+    "<title>American Accent Diagnostic Lab</title>" +
+    "<style>" +
+    "  * { box-sizing: border-box; }" +
+    "  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif; background: #0d131c; color: #e6edf5; }" +
+    "  header { background: #151f2e; border-bottom: 1px solid #28384f; padding: 16px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }" +
+    "  header h1 { margin: 0; font-size: 19px; }" +
+    "  header p { margin: 4px 0 0; color: #9fb0c7; font-size: 13px; }" +
+    "  a.back-link { color: #8cc2ff; text-decoration: none; font-size: 13px; border: 1px solid #355075; padding: 7px 12px; border-radius: 6px; }" +
+    "  main { max-width: 1280px; margin: 20px auto; padding: 0 18px 60px; }" +
+    "  .card { background: #141d2b; border: 1px solid #26354b; border-radius: 12px; padding: 18px; margin-bottom: 18px; }" +
+    "  .controls-row { display: grid; grid-template-columns: 1.4fr 0.8fr auto auto; gap: 12px; align-items: end; }" +
+    "  @media (max-width: 820px) { .controls-row { grid-template-columns: 1fr; } }" +
+    "  label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #9fb0c7; margin-bottom: 6px; }" +
+    "  input[type=\"text\"], select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #334663; background: #0c121b; color: #f0f5fb; font-size: 15px; }" +
+    "  button { padding: 10px 15px; border-radius: 8px; border: 0; font-weight: 600; font-size: 13px; cursor: pointer; background: #2b7de9; color: #fff; }" +
+    "  button.record { background: #d64545; }" +
+    "  button.stop { background: #22a06b; }" +
+    "  button.secondary { background: #223147; color: #dce7f5; border: 1px solid #334866; }" +
+    "  button.secondary:hover { background: #2b3e59; }" +
+    "  button:disabled { opacity: 0.45; cursor: not-allowed; }" +
+    "  .samples { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }" +
+    "  .chip { background: #1f2e45; color: #b9d2f2; border: 1px solid #32496b; padding: 4px 10px; border-radius: 999px; font-size: 12px; cursor: pointer; }" +
+    "  .chip:hover { background: #2d4261; }" +
+    "  .status { margin-top: 10px; font-size: 13px; color: #b7c8de; }" +
+    "  .score-banner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }" +
+    "  @media (max-width: 780px) { .score-banner { grid-template-columns: repeat(2, 1fr); } }" +
+    "  .kpi { background: #0e1520; border: 1px solid #243349; border-radius: 10px; padding: 13px; }" +
+    "  .kpi span { font-size: 11px; text-transform: uppercase; color: #93a6bf; display: block; }" +
+    "  .kpi strong { font-size: 22px; margin-top: 4px; display: block; color: #7cc0ff; }" +
+    "  .focus-box { margin-top: 14px; background: #271b10; border: 1px solid #96601a; border-radius: 10px; padding: 13px 15px; color: #ffe0ad; font-size: 14px; line-height: 1.5; }" +
+    "  .phoneme-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }" +
+    "  .ph-pill { background: #121c2b; border: 1px solid #2f4361; border-radius: 8px; padding: 7px 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 13px; }" +
+    "  .ph-pill:hover { border-color: #60a5fa; background: #19273c; }" +
+    "  .ph-pill.active { border-color: #facc15; background: #282414; box-shadow: 0 0 0 1px #facc15; }" +
+    "  .ph-pill.vowel { border-left: 3px solid #38bdf8; }" +
+    "  .ph-pill.consonant { border-left: 3px solid #a78bfa; }" +
+    "  .ph-badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 700; }" +
+    "  .badge-good { background: rgba(34, 197, 94, 0.18); color: #6ee7b7; }" +
+    "  .badge-mid { background: rgba(250, 204, 21, 0.18); color: #fde047; }" +
+    "  .badge-bad { background: rgba(248, 113, 113, 0.22); color: #fca5a5; }" +
+    "  .side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }" +
+    "  @media (max-width: 920px) { .side-by-side { grid-template-columns: 1fr; } }" +
+    "  .pane-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }" +
+    "  .pane-header h3 { margin: 0; font-size: 15px; }" +
+    "  canvas.praat-canvas { width: 100%; height: 330px; background: #080c12; border: 1px solid #24334a; border-radius: 8px; display: block; }" +
+    "  canvas.vowel-canvas { width: 100%; height: 340px; background: #0a1019; border: 1px solid #26364f; border-radius: 10px; display: block; }" +
+    "  .legend { margin-top: 10px; font-size: 12px; color: #9cb0c9; display: flex; flex-wrap: wrap; gap: 14px; }" +
+    "  .nums-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; font-size: 12px; }" +
+    "  .num-cell { background: #0e1520; border: 1px solid #223047; border-radius: 7px; padding: 7px 9px; display: flex; justify-content: space-between; }" +
+    "  .num-cell b { color: #dce8f8; }" +
+    "  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }" +
+    "  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #233249; vertical-align: top; }" +
+    "  th { color: #9cb0c9; font-weight: 600; font-size: 12px; text-transform: uppercase; }" +
+    "  tr.clickable-row { cursor: pointer; }" +
+    "  tr.clickable-row:hover { background: #1b2638; }" +
+    "  .bad-syl { color: #ff9d76; font-weight: 700; }" +
+    "  .ok-syl { color: #6ee7a8; font-weight: 600; }" +
+    "  audio { width: 100%; margin-top: 8px; height: 32px; }" +
+    "</style>" +
+    "</head>" +
+    "<body>" +
+    "<header>" +
+    "  <div>" +
+    "    <h1>American Accent Diagnostic Lab</h1>" +
+    "    <p>Phoneme-Level Acoustic Diagnosis, Tongue Position F1/F2 Charts, Interactive Segment Playback &amp; Articulatory Coaching</p>" +
+    "  </div>" +
+    "  <a class=\"back-link\" href=\"/\">&larr; Back to Main Lab</a>" +
+    "</header>" +
+    "<main>" +
+    "  <section class=\"card\">" +
+    "    <div class=\"controls-row\">" +
+    "      <div>" +
+    "        <label for=\"wordInput\">Target English Word</label>" +
+    "        <input id=\"wordInput\" type=\"text\" value=\"web\" placeholder=\"Type a single word (e.g., web, water, pronunciation)\" />" +
+    "      </div>" +
+    "      <div>" +
+    "        <label for=\"voiceSelect\">Reference Voice</label>" +
+    "        <select id=\"voiceSelect\">" +
+    "          <option value=\"nova\" selected>Nova (General American)</option>" +
+    "          <option value=\"alloy\">Alloy (General American)</option>" +
+    "          <option value=\"onyx\">Onyx (General American)</option>" +
+    "        </select>" +
+    "      </div>" +
+    "      <div>" +
+    "        <button id=\"startBtn\" type=\"button\" class=\"record\">&#9679; Start Recording</button>" +
+    "      </div>" +
+    "      <div>" +
+    "        <button id=\"stopBtn\" type=\"button\" class=\"stop\" disabled>&#9632; Stop &amp; Diagnose</button>" +
+    "      </div>" +
+    "    </div>" +
+    "    <div id=\"sampleChips\" class=\"samples\">" +
+    "      <span style=\"font-size:12px;color:#8fa3bd;\">Quick words:</span>" +
+    "      <span class=\"chip\" data-word=\"web\">web</span>" +
+    "      <span class=\"chip\" data-word=\"water\">water</span>" +
+    "      <span class=\"chip\" data-word=\"tracks\">tracks</span>" +
+    "      <span class=\"chip\" data-word=\"trucks\">trucks</span>" +
+    "      <span class=\"chip\" data-word=\"three\">three</span>" +
+    "      <span class=\"chip\" data-word=\"thirty\">thirty</span>" +
+    "      <span class=\"chip\" data-word=\"emerge\">emerge</span>" +
+    "      <span class=\"chip\" data-word=\"immerse\">immerse</span>" +
+    "      <span class=\"chip\" data-word=\"variation\">variation</span>" +
+    "      <span class=\"chip\" data-word=\"pronunciation\">pronunciation</span>" +
+    "    </div>" +
+    "    <div id=\"statusMsg\" class=\"status\">Enter a word, click <strong>Start Recording</strong>, say the word clearly, then click <strong>Stop &amp; Diagnose</strong>.</div>" +
+    "  </section>" +
+    "  <section id=\"resultsSection\" hidden>" +
+    "    <div class=\"card\">" +
+    "      <div class=\"score-banner\">" +
+    "        <div class=\"kpi\"><span>Overall Accent Match</span><strong id=\"overallScore\">--%</strong></div>" +
+    "        <div class=\"kpi\"><span>Target IPA &amp; Syllables</span><strong id=\"ipaAndSyl\">--</strong></div>" +
+    "        <div class=\"kpi\"><span>Exact Sound to Correct</span><strong id=\"focusSoundTitle\">--</strong></div>" +
+    "        <div class=\"kpi\"><span>DTW Spectral Distance</span><strong id=\"dtwDist\">--</strong></div>" +
+    "      </div>" +
+    "      <div id=\"focusAdvice\" class=\"focus-box\"></div>" +
+    "      <div style=\"margin-top:14px;\">" +
+    "        <span style=\"font-size:12px;color:#9fb0c7;\"><strong>Interactive Phoneme Map</strong> (Click any sound to highlight it on both spectrograms and hear Reference vs. Your segment):</span>" +
+    "        <div id=\"phonemeStrip\" class=\"phoneme-strip\"></div>" +
+    "        <div id=\"segmentPlayerBar\" style=\"margin-top:10px;display:none;gap:8px;align-items:center;flex-wrap:wrap;\">" +
+    "          <span id=\"selectedPhLabel\" style=\"font-size:13px;color:#fde047;font-weight:600;\"></span>" +
+    "          <button id=\"playRefSegBtn\" type=\"button\" class=\"secondary\">&#9654; Hear Reference Sound</button>" +
+    "          <button id=\"playUserSegBtn\" type=\"button\" class=\"secondary\">&#9654; Hear Your Sound</button>" +
+    "          <button id=\"clearSegBtn\" type=\"button\" class=\"secondary\">Clear Highlight</button>" +
+    "        </div>" +
+    "      </div>" +
+    "    </div>" +
+    "    <div class=\"card\">" +
+    "      <h3 style=\"margin:0 0 4px;\">Tongue &amp; Jaw Position Charts (F1 / F2 Vowel Space)</h3>" +
+    "      <p style=\"margin:0 0 14px;font-size:13px;color:#9fb0c7;\">Compares where each syllable's vowel should be articulated in General American (left) vs. where your tongue/jaw actually placed it (right). Curved arrows show diphthong glides.</p>" +
+    "      <div class=\"side-by-side\">" +
+    "        <div><div class=\"pane-header\"><h3>American Reference Tongue Target</h3></div><canvas id=\"refVowelCanvas\" class=\"vowel-canvas\" width=\"560\" height=\"340\"></canvas></div>" +
+    "        <div><div class=\"pane-header\"><h3>Your Tongue &amp; Jaw Placement</h3></div><canvas id=\"userVowelCanvas\" class=\"vowel-canvas\" width=\"560\" height=\"340\"></canvas></div>" +
+    "      </div>" +
+    "    </div>" +
+    "    <div class=\"card\">" +
+    "      <div class=\"side-by-side\">" +
+    "        <div>" +
+    "          <div class=\"pane-header\"><h3>American Reference Acoustic Track</h3><button id=\"playRefFullBtn\" type=\"button\" class=\"secondary\">&#9654; Play Full Ref</button></div>" +
+    "          <canvas id=\"refCanvas\" class=\"praat-canvas\" width=\"560\" height=\"330\"></canvas>" +
+    "          <audio id=\"refAudio\" controls></audio>" +
+    "          <div id=\"refNums\" class=\"nums-grid\"></div>" +
+    "        </div>" +
+    "        <div>" +
+    "          <div class=\"pane-header\"><h3>Your Recording (DTW-Aligned)</h3><button id=\"playUserFullBtn\" type=\"button\" class=\"secondary\">&#9654; Play Full Yours</button></div>" +
+    "          <canvas id=\"userCanvas\" class=\"praat-canvas\" width=\"560\" height=\"330\"></canvas>" +
+    "          <audio id=\"userAudio\" controls></audio>" +
+    "          <div id=\"userNums\" class=\"nums-grid\"></div>" +
+    "        </div>" +
+    "      </div>" +
+    "      <div id=\"dynamicLegend\" class=\"legend\"></div>" +
+    "    </div>" +
+    "    <div class=\"card\">" +
+    "      <h3 style=\"margin:0 0 6px;\">Phoneme-by-Phoneme Articulatory Diagnosis</h3>" +
+    "      <p style=\"margin:0 0 8px;font-size:12px;color:#9fb0c7;\">Click any row to highlight that phoneme on the spectrograms and compare its isolated audio.</p>" +
+    "      <table>" +
+    "        <thead>" +
+    "          <tr><th>Syllable</th><th>Sound</th><th>Category</th><th>Match</th><th>Vowel Formants (You vs Ref)</th><th>Duration</th><th>How to Move Tongue, Jaw &amp; Lips</th></tr>" +
+    "        </thead>" +
+    "        <tbody id=\"phonemeTableBody\"></tbody>" +
+    "      </table>" +
+    "    </div>" +
+    "  </section>" +
+    "</main>" +
+    "<script>" +
+    "var mediaRecorder = null;" +
+    "var chunks = [];" +
+    "var streamRef = null;" +
+    "var lastResult = null;" +
+    "var selectedPhonemeId = null;" +
+    "var audioCtx = null;" +
+    "var decodedRefBuf = null;" +
+    "var decodedUserBuf = null;" +
 
-router.get(["/", ""], (req, res) => {
-  res.type("html").send(`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>American Accent Word Lab (Praat-Style)</title>
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #0f141c;
-    color: #e6edf5;
-  }
-  header {
-    background: #172131;
-    border-bottom: 1px solid #29384f;
-    padding: 18px 24px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
-  header h1 { margin: 0; font-size: 20px; }
-  header p { margin: 4px 0 0; color: #9fb0c7; font-size: 13px; }
-  a.back-link {
-    color: #8cc2ff;
-    text-decoration: none;
-    font-size: 13px;
-    border: 1px solid #355075;
-    padding: 7px 12px;
-    border-radius: 6px;
-  }
-  main {
-    max-width: 1240px;
-    margin: 22px auto;
-    padding: 0 18px 50px;
-  }
-  .card {
-    background: #161f2e;
-    border: 1px solid #28364c;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 18px;
-  }
-  .controls-row {
-    display: grid;
-    grid-template-columns: 1.4fr 0.8fr auto auto;
-    gap: 12px;
-    align-items: end;
-  }
-  @media (max-width: 820px) {
-    .controls-row { grid-template-columns: 1fr; }
-  }
-  label {
-    display: block;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #9fb0c7;
-    margin-bottom: 6px;
-  }
-  input[type="text"], select {
-    width: 100%;
-    padding: 11px 12px;
-    border-radius: 8px;
-    border: 1px solid #334663;
-    background: #0e1520;
-    color: #f0f5fb;
-    font-size: 15px;
-  }
-  button {
-    padding: 11px 16px;
-    border-radius: 8px;
-    border: 0;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    background: #2b7de9;
-    color: #fff;
-  }
-  button.record { background: #d64545; }
-  button.stop { background: #22a06b; }
-  button.secondary { background: #26354b; color: #dce7f5; }
-  button:disabled { opacity: 0.45; cursor: not-allowed; }
-  .samples {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-  }
-  .chip {
-    background: #213047;
-    color: #b9d2f2;
-    border: 1px solid #32496b;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  .chip:hover { background: #2d4261; }
-  .status {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #b7c8de;
-  }
-  .score-banner {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  @media (max-width: 780px) {
-    .score-banner { grid-template-columns: repeat(2, 1fr); }
-  }
-  .kpi {
-    background: #101824;
-    border: 1px solid #25344b;
-    border-radius: 10px;
-    padding: 14px;
-  }
-  .kpi span { font-size: 12px; color: #93a6bf; display: block; }
-  .kpi strong { font-size: 24px; margin-top: 4px; display: block; color: #7cc0ff; }
-  .focus-box {
-    margin-top: 14px;
-    background: #281e12;
-    border: 1px solid #8a5a19;
-    border-radius: 10px;
-    padding: 12px 14px;
-    color: #ffd79a;
-    font-size: 14px;
-  }
-  .side-by-side {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  @media (max-width: 900px) {
-    .side-by-side { grid-template-columns: 1fr; }
-  }
-  .pane-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  .pane-header h3 { margin: 0; font-size: 15px; }
-  canvas.praat-canvas {
-    width: 100%;
-    height: 330px;
-    background: #090d14;
-    border: 1px solid #24334a;
-    border-radius: 8px;
-    display: block;
-  }
-  .legend {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #9cb0c9;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-  .nums-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-    font-size: 13px;
-  }
-  .num-cell {
-    background: #0f1722;
-    border: 1px solid #223047;
-    border-radius: 7px;
-    padding: 8px 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .num-cell b { color: #dce8f8; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 13px;
-  }
-  th, td {
-    text-align: left;
-    padding: 9px 10px;
-    border-bottom: 1px solid #233249;
-  }
-  th { color: #9cb0c9; font-weight: 600; }
-  .bad-syl { color: #ff9d76; font-weight: 700; }
-  .ok-syl { color: #6ee7a8; font-weight: 600; }
-  audio { width: 100%; margin-top: 10px; height: 34px; }
-</style>
-</head>
-<body>
+    "function playEl(id) {" +
+    "  var el = document.getElementById(id);" +
+    "  if (el && el.src) { el.currentTime = 0; el.play().catch(function () {}); }" +
+    "}" +
 
-<header>
-  <div>
-    <h1>American Accent Word Lab — Praat-Style Side-by-Side</h1>
-    <p>Single-word acoustic comparison: Waveform, 0–8 kHz Spectrogram + F1/F2/F3 Formants, Pitch (F0), Matching Score &amp; Syllable Self-Correction</p>
-  </div>
-  <a class="back-link" href="/">← Back to Main Lab</a>
-</header>
+    "function decodeUrlToAudioBuffer(url) {" +
+    "  var AC = window.AudioContext || window.webkitAudioContext;" +
+    "  if (!audioCtx && AC) audioCtx = new AC();" +
+    "  if (!audioCtx) return Promise.resolve(null);" +
+    "  return fetch(url).then(function (r) { return r.arrayBuffer(); }).then(function (b) { return audioCtx.decodeAudioData(b); });" +
+    "}" +
 
-<main>
-  <section class="card">
-    <div class="controls-row">
-      <div>
-        <label for="wordInput">Target English Word</label>
-        <input id="wordInput" type="text" value="water" placeholder="Type a single word (e.g., water, tracks, three)" />
-      </div>
-      <div>
-        <label for="voiceSelect">Reference Voice</label>
-        <select id="voiceSelect">
-          <option value="alloy" selected>Alloy (General American)</option>
-          <option value="nova">Nova (General American)</option>
-          <option value="onyx">Onyx (General American)</option>
-        </select>
-      </div>
-      <div>
-        <button id="startBtn" class="record" onclick="startWordRecording()">● Start Recording</button>
-      </div>
-      <div>
-        <button id="stopBtn" class="stop" onclick="stopWordRecording()" disabled>■ Stop &amp; Compare</button>
-      </div>
-    </div>
+    "function playSlice(buffer, startMs, endMs) {" +
+    "  if (!buffer) return;" +
+    "  var AC = window.AudioContext || window.webkitAudioContext;" +
+    "  if (!audioCtx && AC) audioCtx = new AC();" +
+    "  if (!audioCtx) return;" +
+    "  if (audioCtx.state === \"suspended\") audioCtx.resume();" +
+    "  var padSec = 0.025;" +
+    "  var startSec = Math.max(0, startMs / 1000 - padSec);" +
+    "  var endSec = Math.min(buffer.duration, endMs / 1000 + padSec);" +
+    "  var durSec = Math.max(0.06, endSec - startSec);" +
+    "  var src = audioCtx.createBufferSource();" +
+    "  src.buffer = buffer;" +
+    "  src.connect(audioCtx.destination);" +
+    "  src.start(0, startSec, durSec);" +
+    "}" +
 
-    <div class="samples">
-      <span style="font-size:12px;color:#8fa3bd;">Quick words:</span>
-      <span class="chip" onclick="setWord('water')">water</span>
-      <span class="chip" onclick="setWord('tracks')">tracks</span>
-      <span class="chip" onclick="setWord('trucks')">trucks</span>
-      <span class="chip" onclick="setWord('three')">three</span>
-      <span class="chip" onclick="setWord('thirty')">thirty</span>
-      <span class="chip" onclick="setWord('emerge')">emerge</span>
-      <span class="chip" onclick="setWord('immerse')">immerse</span>
-      <span class="chip" onclick="setWord('variation')">variation</span>
-    </div>
+    "function playSelectedSegment(who) {" +
+    "  if (!lastResult || !selectedPhonemeId) return;" +
+    "  var list = lastResult.comparison.phonemeDiagnostics || [];" +
+    "  var ph = list.find(function (p) { return p.id === selectedPhonemeId; });" +
+    "  if (!ph) return;" +
+    "  if (who === \"ref\") playSlice(decodedRefBuf, ph.refStartMs, ph.refEndMs);" +
+    "  else playSlice(decodedUserBuf, ph.userStartMs, ph.userEndMs);" +
+    "}" +
 
-    <div id="statusMsg" class="status">Enter a word, click <strong>Start Recording</strong>, say the word clearly, then click <strong>Stop &amp; Compare</strong>.</div>
-  </section>
+    "function selectPhoneme(phId) {" +
+    "  selectedPhonemeId = phId;" +
+    "  if (!lastResult) return;" +
+    "  document.querySelectorAll(\".ph-pill\").forEach(function (el) {" +
+    "    el.classList.toggle(\"active\", el.dataset.phId === phId);" +
+    "  });" +
+    "  var list = lastResult.comparison.phonemeDiagnostics || [];" +
+    "  var ph = list.find(function (p) { return p.id === phId; });" +
+    "  var bar = document.getElementById(\"segmentPlayerBar\");" +
+    "  if (ph) {" +
+    "    bar.style.display = \"flex\";" +
+    "    document.getElementById(\"selectedPhLabel\").textContent = \"Selected: \" + ph.ipa + \" in '\" + ph.syllableText + \"' (\" + ph.type + \")\";" +
+    "  }" +
+    "  redrawPraatCanvases();" +
+    "}" +
 
-  <section id="resultsSection" class="card" hidden>
-    <div class="score-banner">
-      <div class="kpi">
-        <span>Overall Accent Match</span>
-        <strong id="overallScore">--%</strong>
-      </div>
-      <div class="kpi">
-        <span>Syllable Count</span>
-        <strong id="syllableCount">--</strong>
-      </div>
-      <div class="kpi">
-        <span>Syllable to Self-Correct</span>
-        <strong id="focusSyllableTitle">--</strong>
-      </div>
-      <div class="kpi">
-        <span>DTW Acoustic Distance</span>
-        <strong id="dtwDist">--</strong>
-      </div>
-    </div>
+    "function clearPhonemeSelection() {" +
+    "  selectedPhonemeId = null;" +
+    "  document.querySelectorAll(\".ph-pill\").forEach(function (el) { el.classList.remove(\"active\"); });" +
+    "  document.getElementById(\"segmentPlayerBar\").style.display = \"none\";" +
+    "  redrawPraatCanvases();" +
+    "}" +
 
-    <div id="focusAdvice" class="focus-box"></div>
+    "async function startWordRecording() {" +
+    "  var word = document.getElementById(\"wordInput\").value.trim();" +
+    "  var status = document.getElementById(\"statusMsg\");" +
+    "  if (!word) { status.textContent = \"Please type a word first.\"; return; }" +
+    "  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {" +
+    "    status.textContent = \"Microphone API unavailable in this browser context (use localhost or HTTPS).\";" +
+    "    return;" +
+    "  }" +
+    "  try {" +
+    "    streamRef = await navigator.mediaDevices.getUserMedia({ audio: true });" +
+    "    chunks = [];" +
+    "    var mimeTypes = [\"audio/webm;codecs=opus\", \"audio/webm\", \"audio/mp4\"];" +
+    "    var mime = typeof MediaRecorder !== \"undefined\" ? mimeTypes.find(function (t) { return MediaRecorder.isTypeSupported(t); }) : \"\";" +
+    "    mediaRecorder = mime ? new MediaRecorder(streamRef, { mimeType: mime }) : new MediaRecorder(streamRef);" +
+    "    mediaRecorder.ondataavailable = function (e) { if (e.data && e.data.size > 0) chunks.push(e.data); };" +
+    "    mediaRecorder.onstop = async function () {" +
+    "      var blob = new Blob(chunks, { type: mediaRecorder.mimeType || \"audio/webm\" });" +
+    "      if (streamRef) { streamRef.getTracks().forEach(function (t) { t.stop(); }); streamRef = null; }" +
+    "      document.getElementById(\"startBtn\").disabled = false;" +
+    "      document.getElementById(\"stopBtn\").disabled = true;" +
+    "      await submitWordComparison(blob, word);" +
+    "    };" +
+    "    mediaRecorder.start();" +
+    "    document.getElementById(\"startBtn\").disabled = true;" +
+    "    document.getElementById(\"stopBtn\").disabled = false;" +
+    "    status.textContent = \"Recording '\" + word + \"'... Click Stop & Diagnose when finished.\";" +
+    "  } catch (err) {" +
+    "    status.textContent = \"Microphone error: \" + (err && err.message ? err.message : String(err));" +
+    "  }" +
+    "}" +
 
-    <div class="side-by-side" style="margin-top:16px;">
-      <div>
-        <div class="pane-header">
-          <h3>American Reference</h3>
-          <button class="secondary" onclick="playEl('refAudio')">▶ Play Ref</button>
-        </div>
-        <canvas id="refCanvas" class="praat-canvas" width="560" height="330"></canvas>
-        <audio id="refAudio" controls></audio>
-        <div id="refNums" class="nums-grid"></div>
-      </div>
+    "function stopWordRecording() {" +
+    "  if (mediaRecorder && mediaRecorder.state === \"recording\") {" +
+    "    document.getElementById(\"statusMsg\").textContent = \"Segmenting phonemes & measuring voiced vowel formants...\";" +
+    "    mediaRecorder.stop();" +
+    "  }" +
+    "}" +
 
-      <div>
-        <div class="pane-header">
-          <h3>Your Recording (DTW-Aligned)</h3>
-          <button class="secondary" onclick="playEl('userAudio')">▶ Play Yours</button>
-        </div>
-        <canvas id="userCanvas" class="praat-canvas" width="560" height="330"></canvas>
-        <audio id="userAudio" controls></audio>
-        <div id="userNums" class="nums-grid"></div>
-      </div>
-    </div>
+    "async function submitWordComparison(blob, word) {" +
+    "  var status = document.getElementById(\"statusMsg\");" +
+    "  var voice = document.getElementById(\"voiceSelect\").value;" +
+    "  try {" +
+    "    var fd = new FormData();" +
+    "    fd.append(\"word\", word);" +
+    "    fd.append(\"voice\", voice);" +
+    "    fd.append(\"audio\", blob, \"word.webm\");" +
+    "    var resp = await fetch(\"/american-accent/api/compare\", { method: \"POST\", body: fd });" +
+    "    var data = await resp.json();" +
+    "    if (!resp.ok) throw new Error(data.error || \"Comparison failed\");" +
+    "    lastResult = data;" +
+    "    selectedPhonemeId = data.comparison.primaryFocusPhoneme ? data.comparison.primaryFocusPhoneme.id : null;" +
+    "    Promise.all([" +
+    "      decodeUrlToAudioBuffer(data.referenceAudioUrl).catch(function () { return null; })," +
+    "      decodeUrlToAudioBuffer(data.userAudioUrl).catch(function () { return null; })" +
+    "    ]).then(function (pair) { decodedRefBuf = pair[0]; decodedUserBuf = pair[1]; });" +
+    "    renderComparison(data);" +
+    "    status.textContent = \"Diagnosed '\" + data.word + \"' \" + data.ipa + \" (\" + data.referenceSource + \").\";" +
+    "  } catch (err) {" +
+    "    status.textContent = \"Error: \" + (err && err.message ? err.message : String(err));" +
+    "  }" +
+    "}" +
 
-    <div class="legend">
-      <span><strong style="color:#58a6ff;">■</strong> Top Track: Waveform</span>
-      <span><strong style="color:#38bdf8;">—</strong> F1 (tongue height)</span>
-      <span><strong style="color:#4ade80;">—</strong> F2 (tongue front/back)</span>
-      <span><strong style="color:#fb923c;">—</strong> F3 (rhotic /r/ cue)</span>
-      <span><strong style="color:#facc15;">—</strong> Pitch F0 (Hz)</span>
-    </div>
+    "function renderNums(containerId, m, hasRhotic) {" +
+    "  var el = document.getElementById(containerId);" +
+    "  var rows = [" +
+    "    [\"Duration\", m.durationMs + \" ms\"]," +
+    "    [\"Pitch (F0)\", m.avgF0 ? m.avgF0 + \" Hz (\" + m.minF0 + \"-\" + m.maxF0 + \")\" : \"Unvoiced\"]," +
+    "    [\"Mean Vowel F1\", m.avgF1 + \" Hz\"]," +
+    "    [\"Mean Vowel F2\", m.avgF2 + \" Hz\"]," +
+    "    [\"Peak Level\", m.maxDb + \" dB\"]" +
+    "  ];" +
+    "  if (hasRhotic) rows.splice(4, 0, [\"Rhotic F3\", m.avgF3 + \" Hz\"]);" +
+    "  el.innerHTML = rows.map(function (r) { return \"<div class=\\\"num-cell\\\"><span>\" + r[0] + \"</span><b>\" + r[1] + \"</b></div>\"; }).join(\"\");" +
+    "}" +
 
-    <h3 style="margin-top:20px;margin-bottom:6px;">Syllable-by-Syllable Breakdown</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Syllable</th>
-          <th>Match</th>
-          <th>Duration (You vs Ref)</th>
-          <th>F1 / F2 Diff</th>
-          <th>Loudness Diff</th>
-          <th>Self-Correction Cue</th>
-        </tr>
-      </thead>
-      <tbody id="syllableTableBody"></tbody>
-    </table>
-  </section>
-</main>
+    "function drawVowelQuadrilateral(canvasId, points, isUser) {" +
+    "  var canvas = document.getElementById(canvasId);" +
+    "  var ctx = canvas.getContext(\"2d\");" +
+    "  var w = canvas.width, h = canvas.height;" +
+    "  ctx.clearRect(0, 0, w, h);" +
+    "  var padL = 62, padR = 54, padT = 48, padB = 34;" +
+    "  var plotW = w - padL - padR, plotH = h - padT - padB;" +
+    "  var toX = function (nx) { return padL + nx * plotW; };" +
+    "  var toY = function (ny) { return padT + ny * plotH; };" +
 
-<script>
-let mediaRecorder = null;
-let chunks = [];
-let streamRef = null;
-let lastResult = null;
+    "  ctx.fillStyle = \"#9fb0c7\"; ctx.font = \"600 12px sans-serif\"; ctx.textAlign = \"center\";" +
+    "  ctx.fillText(\"Where the tongue is positioned (F2: Front -> Back)\", padL + plotW / 2, 16);" +
 
-function setWord(w) {
-  document.getElementById("wordInput").value = w;
-}
+    "  ctx.fillStyle = \"#dce7f5\"; ctx.font = \"700 13px sans-serif\";" +
+    "  ctx.fillText(\"Front\", toX(0.14), 36);" +
+    "  ctx.fillText(\"Central\", toX(0.55), 36);" +
+    "  ctx.fillText(\"Back\", toX(0.90), 36);" +
 
-function playEl(id) {
-  const el = document.getElementById(id);
-  if (el && el.src) {
-    el.currentTime = 0;
-    el.play().catch(() => {});
-  }
-}
+    "  ctx.textAlign = \"right\";" +
+    "  ctx.fillText(\"High\", padL - 10, toY(0.12) + 4);" +
+    "  ctx.fillText(\"Mid\", padL - 10, toY(0.50) + 4);" +
+    "  ctx.fillText(\"Low\", padL - 10, toY(0.88) + 4);" +
 
-async function startWordRecording() {
-  const word = document.getElementById("wordInput").value.trim();
-  const status = document.getElementById("statusMsg");
-  if (!word) {
-    status.textContent = "Please type a word first.";
-    return;
-  }
+    "  ctx.textAlign = \"left\";" +
+    "  ctx.fillText(\"High\", w - padR + 10, toY(0.12) + 4);" +
+    "  ctx.fillText(\"Mid\", w - padR + 10, toY(0.50) + 4);" +
+    "  ctx.fillText(\"Low\", w - padR + 10, toY(0.88) + 4);" +
 
-  try {
-    streamRef = await navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
-    });
-    chunks = [];
-    const mime = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"].find(t =>
-      MediaRecorder.isTypeSupported(t)
-    );
-    mediaRecorder = mime ? new MediaRecorder(streamRef, { mimeType: mime }) : new MediaRecorder(streamRef);
-    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-    mediaRecorder.onstop = async () => {
-      const blob = new Blob(chunks, { type: mediaRecorder.mimeType || "audio/webm" });
-      if (streamRef) {
-        streamRef.getTracks().forEach(t => t.stop());
-        streamRef = null;
-      }
-      document.getElementById("startBtn").disabled = false;
-      document.getElementById("stopBtn").disabled = true;
-      await submitWordComparison(blob, word);
-    };
+    "  var topLeftX = toX(0.0), topRightX = toX(1.0), botLeftX = toX(0.36), botRightX = toX(1.0);" +
+    "  var topY = toY(0.0), botY = toY(1.0);" +
+    "  ctx.strokeStyle = \"#334766\"; ctx.lineWidth = 1.6;" +
+    "  ctx.beginPath(); ctx.moveTo(topLeftX, topY); ctx.lineTo(topRightX, topY); ctx.lineTo(botRightX, botY); ctx.lineTo(botLeftX, botY); ctx.closePath(); ctx.stroke();" +
 
-    mediaRecorder.start();
-    document.getElementById("startBtn").disabled = true;
-    document.getElementById("stopBtn").disabled = false;
-    status.textContent = '🔴 Recording "' + word + '"... Click Stop & Compare when finished.';
-  } catch (err) {
-    status.textContent = "Microphone error: " + err.message;
-  }
-}
+    "  [0.34, 0.67].forEach(function (frac) {" +
+    "    var lx = topLeftX + (botLeftX - topLeftX) * frac;" +
+    "    ctx.beginPath(); ctx.moveTo(lx, toY(frac)); ctx.lineTo(topRightX, toY(frac)); ctx.stroke();" +
+    "  });" +
+    "  ctx.beginPath(); ctx.moveTo(toX(0.36), topY); ctx.lineTo(toX(0.64), botY); ctx.moveTo(toX(0.72), topY); ctx.lineTo(toX(0.82), botY); ctx.stroke();" +
 
-function stopWordRecording() {
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    document.getElementById("statusMsg").textContent = "Processing audio & computing Praat-style acoustic alignment...";
-    mediaRecorder.stop();
-  }
-}
+    "  var anchors = [" +
+    "    { sym: \"i\", x: 0.12, y: 0.11 }, { sym: \"e\", x: 0.28, y: 0.52 }, { sym: \"a\", x: 0.44, y: 0.82 }," +
+    "    { sym: \"@\", x: 0.60, y: 0.48 }, { sym: \"u\", x: 0.90, y: 0.12 }, { sym: \"o\", x: 0.90, y: 0.88 }" +
+    "  ];" +
+    "  ctx.fillStyle = \"rgba(148, 163, 184, 0.25)\"; ctx.font = \"12px sans-serif\"; ctx.textAlign = \"center\";" +
+    "  anchors.forEach(function (a) { ctx.fillText(a.sym, toX(a.x), toY(a.y) + 4); });" +
 
-async function submitWordComparison(blob, word) {
-  const status = document.getElementById("statusMsg");
-  const voice = document.getElementById("voiceSelect").value;
-  try {
-    const fd = new FormData();
-    fd.append("word", word);
-    fd.append("voice", voice);
-    fd.append("audio", blob, "word.webm");
+    "  (points || []).forEach(function (pt) {" +
+    "    var cx = toX(pt.x), cy = toY(pt.y);" +
+    "    var color = !isUser ? \"#38bdf8\" : (pt.matchScore >= 82 ? \"#4ade80\" : (pt.matchScore >= 65 ? \"#facc15\" : \"#f87171\"));" +
+    "    if (pt.isDiphthong && typeof pt.endX === \"number\" && typeof pt.endY === \"number\") {" +
+    "      var ex = toX(pt.endX), ey = toY(pt.endY);" +
+    "      var ctrlX = (cx + ex) / 2 + 16, ctrlY = (cy + ey) / 2 - 12;" +
+    "      ctx.strokeStyle = color; ctx.lineWidth = 2.5;" +
+    "      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.quadraticCurveTo(ctrlX, ctrlY, ex, ey); ctx.stroke();" +
+    "      var angle = Math.atan2(ey - ctrlY, ex - ctrlX);" +
+    "      ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(ex, ey);" +
+    "      ctx.lineTo(ex - 9 * Math.cos(angle - 0.45), ey - 9 * Math.sin(angle - 0.45));" +
+    "      ctx.lineTo(ex - 9 * Math.cos(angle + 0.45), ey - 9 * Math.sin(angle + 0.45));" +
+    "      ctx.closePath(); ctx.fill();" +
+    "    }" +
+    "    ctx.fillStyle = \"#0b121d\"; ctx.strokeStyle = color; ctx.lineWidth = pt.isStressed ? 3 : 2;" +
+    "    ctx.beginPath(); ctx.arc(cx, cy, 13, 0, Math.PI * 2); ctx.fill(); ctx.stroke();" +
+    "    ctx.fillStyle = color; ctx.font = \"700 12px sans-serif\"; ctx.textAlign = \"center\";" +
+    "    ctx.fillText(pt.ipa.replace(/\\//g, \"\"), cx, cy + 4);" +
+    "    ctx.fillStyle = \"#f1f5f9\"; ctx.font = \"600 11px sans-serif\";" +
+    "    var placeRight = cx < w * 0.62;" +
+    "    ctx.textAlign = placeRight ? \"left\" : \"right\";" +
+    "    ctx.fillText(pt.label, cx + (placeRight ? 17 : -17), cy + 4);" +
+    "  });" +
+    "}" +
 
-    const resp = await fetch("/american-accent/api/compare", { method: "POST", body: fd });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || "Comparison failed");
+    "function drawPraatPane(canvasId, metrics, specRows, pitchArr, f1Arr, f2Arr, f3Arr, isUserAligned, phonemes, selectedPhId) {" +
+    "  var canvas = document.getElementById(canvasId);" +
+    "  var ctx = canvas.getContext(\"2d\");" +
+    "  var w = canvas.width, h = canvas.height;" +
+    "  ctx.clearRect(0, 0, w, h);" +
+    "  var waveTop = 8, waveH = 72, specTop = 88, specH = 158, pitchTop = 254, pitchH = 66;" +
 
-    lastResult = data;
-    renderComparison(data);
-    status.textContent = 'Compared "' + data.word + '" (' + data.referenceSource + ').';
-  } catch (err) {
-    status.textContent = "Error: " + err.message;
-  }
-}
+    "  ctx.fillStyle = \"#0b1019\"; ctx.fillRect(0, waveTop, w, waveH);" +
+    "  ctx.strokeStyle = \"#22324a\"; ctx.beginPath(); ctx.moveTo(0, waveTop + waveH / 2); ctx.lineTo(w, waveTop + waveH / 2); ctx.stroke();" +
 
-function renderNums(containerId, m) {
-  const el = document.getElementById(containerId);
-  el.innerHTML = [
-    ["Duration", m.durationMs + " ms"],
-    ["Pitch (F0)", m.avgF0 ? m.avgF0 + " Hz (" + m.minF0 + "-" + m.maxF0 + ")" : "Unvoiced"],
-    ["Formant F1", m.avgF1 + " Hz"],
-    ["Formant F2", m.avgF2 + " Hz"],
-    ["Formant F3", m.avgF3 + " Hz"],
-    ["Peak Level", m.maxDb + " dB"]
-  ].map(([k, v]) => '<div class="num-cell"><span>' + k + '</span><b>' + v + '</b></div>').join("");
-}
+    "  var pts = metrics.wavePoints || [];" +
+    "  ctx.strokeStyle = isUserAligned ? \"#58a6ff\" : \"#93c5fd\"; ctx.lineWidth = 1.5;" +
+    "  for (var i = 0; i < pts.length; i++) {" +
+    "    var x = (i / Math.max(1, pts.length - 1)) * w;" +
+    "    ctx.beginPath(); ctx.moveTo(x, waveTop + waveH / 2 - pts[i][1] * (waveH * 0.45)); ctx.lineTo(x, waveTop + waveH / 2 - pts[i][0] * (waveH * 0.45)); ctx.stroke();" +
+    "  }" +
 
-function drawPraatPane(canvasId, metrics, specRows, pitchArr, f1Arr, f2Arr, f3Arr, isUserAligned) {
-  const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext("2d");
-  const w = canvas.width;
-  const h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
+    "  ctx.fillStyle = \"#06090f\"; ctx.fillRect(0, specTop, w, specH);" +
+    "  var cols = specRows.length;" +
+    "  if (cols > 0) {" +
+    "    var rows = specRows[0].length, colW = w / cols, rowH = specH / rows;" +
+    "    for (var c = 0; c < cols; c++) {" +
+    "      for (var r = 0; r < rows; r++) {" +
+    "        var lum = Math.round((specRows[c][r] || 0) * 220);" +
+    "        ctx.fillStyle = \"rgb(\" + Math.round(lum * 0.55) + \",\" + Math.round(lum * 0.8) + \",\" + lum + \")\";" +
+    "        ctx.fillRect(c * colW, specTop + specH - (r + 1) * rowH, Math.ceil(colW + 0.5), Math.ceil(rowH + 0.5));" +
+    "      }" +
+    "    }" +
+    "    var hzToY = function (hz) { return specTop + specH - Math.max(0, Math.min(1, hz / 8000)) * specH; };" +
+    "    var drawContour = function (arr, color, width) {" +
+    "      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath(); var started = false;" +
+    "      for (var k = 0; k < arr.length; k++) {" +
+    "        if (typeof arr[k] !== \"number\") { started = false; continue; }" +
+    "        var px = ((k + 0.5) / Math.max(1, arr.length)) * w, py = hzToY(arr[k]);" +
+    "        if (!started) { ctx.moveTo(px, py); started = true; } else { ctx.lineTo(px, py); }" +
+    "      }" +
+    "      ctx.stroke();" +
+    "    };" +
+    "    drawContour(f1Arr, \"#38bdf8\", 2.2);" +
+    "    drawContour(f2Arr, \"#4ade80\", 2.2);" +
+    "    if (f3Arr && f3Arr.some(function (v) { return typeof v === \"number\"; })) drawContour(f3Arr, \"#fb923c\", 1.8);" +
+    "  }" +
 
-  // Layout: [0..82] Waveform, [88..248] Spectrogram + Formants, [254..322] Pitch F0
-  const waveTop = 8, waveH = 72;
-  const specTop = 88, specH = 158;
-  const pitchTop = 254, pitchH = 66;
+    "  var totalDur = Math.max(1, metrics.durationMs);" +
+    "  (phonemes || []).forEach(function (ph) {" +
+    "    var sMs = isUserAligned ? ph.userStartMs : ph.refStartMs;" +
+    "    var eMs = isUserAligned ? ph.userEndMs : ph.refEndMs;" +
+    "    var x1 = (sMs / totalDur) * w, x2 = (eMs / totalDur) * w;" +
+    "    if (selectedPhId && ph.id === selectedPhId) {" +
+    "      ctx.fillStyle = \"rgba(250, 204, 21, 0.22)\"; ctx.fillRect(x1, waveTop, Math.max(4, x2 - x1), specTop + specH - waveTop);" +
+    "      ctx.strokeStyle = \"#facc15\"; ctx.lineWidth = 1.6; ctx.strokeRect(x1, waveTop, Math.max(4, x2 - x1), specTop + specH - waveTop);" +
+    "    }" +
+    "    ctx.strokeStyle = \"rgba(148, 163, 184, 0.35)\"; ctx.setLineDash([2, 3]);" +
+    "    ctx.beginPath(); ctx.moveTo(x1, waveTop); ctx.lineTo(x1, specTop + specH); ctx.stroke(); ctx.setLineDash([]);" +
+    "    ctx.fillStyle = ph.type === \"vowel\" ? \"#7dd3fc\" : \"#c4b5fd\"; ctx.font = \"600 10px sans-serif\"; ctx.textAlign = \"center\";" +
+    "    ctx.fillText(ph.symbol, (x1 + x2) / 2, specTop + 12);" +
+    "  });" +
 
-  // 1. Waveform
-  ctx.fillStyle = "#0b1019";
-  ctx.fillRect(0, waveTop, w, waveH);
-  ctx.strokeStyle = "#22324a";
-  ctx.beginPath();
-  ctx.moveTo(0, waveTop + waveH / 2);
-  ctx.lineTo(w, waveTop + waveH / 2);
-  ctx.stroke();
+    "  ctx.fillStyle = \"#0b1019\"; ctx.fillRect(0, pitchTop, w, pitchH);" +
+    "  ctx.strokeStyle = \"#facc15\"; ctx.lineWidth = 2; ctx.beginPath(); var pStarted = false;" +
+    "  for (var m = 0; m < pitchArr.length; m++) {" +
+    "    if (typeof pitchArr[m] !== \"number\") { pStarted = false; continue; }" +
+    "    var qx = ((m + 0.5) / Math.max(1, pitchArr.length)) * w;" +
+    "    var qy = pitchTop + pitchH - 6 - Math.max(0, Math.min(1, (pitchArr[m] - 75) / 325)) * (pitchH - 12);" +
+    "    if (!pStarted) { ctx.moveTo(qx, qy); pStarted = true; } else { ctx.lineTo(qx, qy); }" +
+    "  }" +
+    "  ctx.stroke();" +
+    "}" +
 
-  const pts = metrics.wavePoints || [];
-  ctx.strokeStyle = isUserAligned ? "#58a6ff" : "#93c5fd";
-  ctx.lineWidth = 1.5;
-  for (let i = 0; i < pts.length; i++) {
-    const x = (i / Math.max(1, pts.length - 1)) * w;
-    const [minV, maxV] = pts[i];
-    const y1 = waveTop + waveH / 2 - maxV * (waveH * 0.45);
-    const y2 = waveTop + waveH / 2 - minV * (waveH * 0.45);
-    ctx.beginPath();
-    ctx.moveTo(x, y1);
-    ctx.lineTo(x, y2);
-    ctx.stroke();
-  }
+    "function redrawPraatCanvases() {" +
+    "  if (!lastResult) return;" +
+    "  var vis = lastResult.comparison.alignedVisuals;" +
+    "  drawPraatPane(\"refCanvas\", lastResult.referenceMetrics, vis.alignedRefSpec, vis.alignedRefPitch, vis.alignedRefF1, vis.alignedRefF2, vis.alignedRefF3, false, lastResult.comparison.phonemeDiagnostics, selectedPhonemeId);" +
+    "  drawPraatPane(\"userCanvas\", lastResult.userMetrics, vis.alignedUserSpec, vis.alignedUserPitch, vis.alignedUserF1, vis.alignedUserF2, vis.alignedUserF3, true, lastResult.comparison.phonemeDiagnostics, selectedPhonemeId);" +
+    "}" +
 
-  // Syllable boundary markers on waveform (when unwarped metrics exist)
-  if (!isUserAligned && Array.isArray(metrics.syllables) && metrics.durationMs > 0) {
-    ctx.strokeStyle = "rgba(250, 204, 21, 0.55)";
-    ctx.setLineDash([3, 3]);
-    metrics.syllables.forEach(s => {
-      const sx = (s.startMs / metrics.durationMs) * w;
-      ctx.beginPath();
-      ctx.moveTo(sx, waveTop);
-      ctx.lineTo(sx, specTop + specH);
-      ctx.stroke();
-    });
-    ctx.setLineDash([]);
-  }
+    "function renderComparison(data) {" +
+    "  document.getElementById(\"resultsSection\").hidden = false;" +
+    "  var comp = data.comparison;" +
+    "  var focusPh = comp.primaryFocusPhoneme;" +
+    "  document.getElementById(\"overallScore\").textContent = comp.overallScore + \"%\";" +
+    "  document.getElementById(\"ipaAndSyl\").textContent = comp.ipa + \" (\" + comp.syllableCount + \" syl)\";" +
+    "  document.getElementById(\"focusSoundTitle\").textContent = focusPh ? focusPh.ipa + \" in '\" + focusPh.syllableText + \"'\" : \"All Aligned\";" +
+    "  document.getElementById(\"dtwDist\").textContent = String(comp.avgDtwDistance);" +
+    "  document.getElementById(\"focusAdvice\").innerHTML = focusPh" +
+    "    ? \"<strong>Primary Articulatory Adjustment — Sound \" + focusPh.ipa + \" in syllable '\" + focusPh.syllableText + \"' (Match: \" + focusPh.matchScore + \"%):</strong> \" + focusPh.feedback" +
+    "    : \"Excellent phoneme alignment across the entire word.\";" +
 
-  // 2. Spectrogram (0 - 8000 Hz)
-  ctx.fillStyle = "#06090f";
-  ctx.fillRect(0, specTop, w, specH);
-  const cols = specRows.length;
-  if (cols > 0) {
-    const rows = specRows[0].length;
-    const colW = w / cols;
-    const rowH = specH / rows;
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) {
-        const val = specRows[c][r] || 0;
-        const lum = Math.round(val * 220);
-        ctx.fillStyle = "rgb(" + Math.round(lum * 0.55) + "," + Math.round(lum * 0.8) + "," + lum + ")";
-        const y = specTop + specH - (r + 1) * rowH;
-        ctx.fillRect(c * colW, y, Math.ceil(colW + 0.5), Math.ceil(rowH + 0.5));
-      }
-    }
+    "  var strip = document.getElementById(\"phonemeStrip\");" +
+    "  strip.innerHTML = \"\";" +
+    "  (comp.phonemeDiagnostics || []).forEach(function (ph) {" +
+    "    var pill = document.createElement(\"div\");" +
+    "    var badgeCls = ph.matchScore >= 82 ? \"badge-good\" : (ph.matchScore >= 65 ? \"badge-mid\" : \"badge-bad\");" +
+    "    pill.className = \"ph-pill \" + ph.type + (ph.id === selectedPhonemeId ? \" active\" : \"\");" +
+    "    pill.dataset.phId = ph.id;" +
+    "    pill.addEventListener(\"click\", function () { selectPhoneme(ph.id); });" +
+    "    pill.innerHTML = \"<strong>\" + ph.ipa + \"</strong><span style=\\\"color:#9fb0c7;font-size:11px;\\\">\" + ph.syllableText + \"</span><span class=\\\"ph-badge \" + badgeCls + \"\\\">\" + ph.matchScore + \"%</span>\";" +
+    "    strip.appendChild(pill);" +
+    "  });" +
+    "  if (selectedPhonemeId) selectPhoneme(selectedPhonemeId);" +
 
-    // Formant tracks F1 (cyan), F2 (green), F3 (orange) mapped over 0..8000 Hz
-    const hzToY = hz => specTop + specH - Math.max(0, Math.min(1, hz / 8000)) * specH;
-    const drawContour = (arr, color, width) => {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.beginPath();
-      let started = false;
-      for (let c = 0; c < arr.length; c++) {
-        const val = arr[c];
-        if (typeof val !== "number") { started = false; continue; }
-        const x = ((c + 0.5) / Math.max(1, arr.length)) * w;
-        const y = hzToY(val);
-        if (!started) { ctx.moveTo(x, y); started = true; }
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    };
-    drawContour(f1Arr, "#38bdf8", 2);
-    drawContour(f2Arr, "#4ade80", 2);
-    drawContour(f3Arr, "#fb923c", 1.6);
-  }
+    "  drawVowelQuadrilateral(\"refVowelCanvas\", comp.vowelCharts.reference, false);" +
+    "  drawVowelQuadrilateral(\"userVowelCanvas\", comp.vowelCharts.user, true);" +
 
-  // 3. Pitch F0 Contour (75 - 400 Hz)
-  ctx.fillStyle = "#0b1019";
-  ctx.fillRect(0, pitchTop, w, pitchH);
-  ctx.strokeStyle = "#facc15";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  let pStarted = false;
-  for (let i = 0; i < pitchArr.length; i++) {
-    const f0 = pitchArr[i];
-    if (typeof f0 !== "number") { pStarted = false; continue; }
-    const x = ((i + 0.5) / Math.max(1, pitchArr.length)) * w;
-    const norm = Math.max(0, Math.min(1, (f0 - 75) / 325));
-    const y = pitchTop + pitchH - 6 - norm * (pitchH - 12);
-    if (!pStarted) { ctx.moveTo(x, y); pStarted = true; }
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-}
+    "  document.getElementById(\"refAudio\").src = data.referenceAudioUrl;" +
+    "  document.getElementById(\"userAudio\").src = data.userAudioUrl;" +
+    "  renderNums(\"refNums\", data.referenceMetrics, comp.hasRhotic);" +
+    "  renderNums(\"userNums\", data.userMetrics, comp.hasRhotic);" +
 
-function renderComparison(data) {
-  document.getElementById("resultsSection").hidden = false;
-  const comp = data.comparison;
-  const vis = comp.alignedVisuals;
+    "  var legendItems = [" +
+    "    \"<span><strong style=\\\"color:#58a6ff;\\\">&#9632;</strong> Top Track: Waveform</span>\"," +
+    "    \"<span><strong style=\\\"color:#38bdf8;\\\">—</strong> F1 (tongue/jaw height)</span>\"," +
+    "    \"<span><strong style=\\\"color:#4ade80;\\\">—</strong> F2 (tongue front/back)</span>\"" +
+    "  ];" +
+    "  if (comp.hasRhotic) legendItems.push(\"<span><strong style=\\\"color:#fb923c;\\\">—</strong> F3 (American /r/ tongue bunching)</span>\");" +
+    "  legendItems.push(\"<span><strong style=\\\"color:#facc15;\\\">—</strong> Pitch F0 (Hz)</span>\");" +
+    "  document.getElementById(\"dynamicLegend\").innerHTML = legendItems.join(\"\");" +
 
-  document.getElementById("overallScore").textContent = comp.overallScore + "%";
-  document.getElementById("syllableCount").textContent = String(comp.syllableCount);
-  document.getElementById("focusSyllableTitle").textContent = comp.focusSyllable
-    ? comp.focusSyllable.label
-    : "All Good";
-  document.getElementById("dtwDist").textContent = String(comp.avgDtwDistance);
+    "  redrawPraatCanvases();" +
 
-  document.getElementById("focusAdvice").innerHTML = comp.focusSyllable
-    ? "<strong>Where to self-correct:</strong> Focus on <strong>" +
-      comp.focusSyllable.label +
-      "</strong> (Match: " +
-      comp.focusSyllable.matchScore +
-      "%). " +
-      comp.focusSyllable.tip
-    : "No syllable-level discrepancy detected.";
+    "  var tbody = document.getElementById(\"phonemeTableBody\");" +
+    "  tbody.innerHTML = \"\";" +
+    "  (comp.phonemeDiagnostics || []).forEach(function (ph) {" +
+    "    var tr = document.createElement(\"tr\");" +
+    "    tr.className = \"clickable-row\";" +
+    "    tr.addEventListener(\"click\", function () { selectPhoneme(ph.id); });" +
+    "    var isBad = ph.matchScore < 75;" +
+    "    var formantCol = ph.type === \"vowel\"" +
+    "      ? \"F1: \" + ph.userFormants.f1 + \" vs \" + ph.refFormants.f1 + \" Hz<br>F2: \" + ph.userFormants.f2 + \" vs \" + ph.refFormants.f2 + \" Hz\"" +
+    "      : (ph.rhotic ? \"F3: \" + ph.userFormants.f3 + \" vs \" + ph.refFormants.f3 + \" Hz\" : \"Consonant (\" + ph.manner + \")\");" +
+    "    tr.innerHTML =" +
+    "      \"<td>Syl \" + ph.syllableIndex + \" (\" + ph.syllableText + \")\" + (ph.isStressedSyllable ? \" &#9733;\" : \"\") + \"</td>\" +" +
+    "      \"<td class=\\\"\" + (isBad ? \"bad-syl\" : \"ok-syl\") + \"\\\">\" + ph.ipa + \"</td>\" +" +
+    "      \"<td>\" + ph.type + \" (\" + ph.manner + \")</td>\" +" +
+    "      \"<td class=\\\"\" + (isBad ? \"bad-syl\" : \"ok-syl\") + \"\\\">\" + ph.matchScore + \"%<br><span style=\\\"font-size:11px;font-weight:400;\\\">\" + ph.status + \"</span></td>\" +" +
+    "      \"<td>\" + formantCol + \"</td>\" +" +
+    "      \"<td>\" + ph.userDurMs + \" ms vs \" + ph.refDurMs + \" ms</td>\" +" +
+    "      \"<td>\" + ph.feedback + \"</td>\";" +
+    "    tbody.appendChild(tr);" +
+    "  });" +
+    "}" +
 
-  document.getElementById("refAudio").src = data.referenceAudioUrl;
-  document.getElementById("userAudio").src = data.userAudioUrl;
-
-  renderNums("refNums", data.referenceMetrics);
-  renderNums("userNums", data.userMetrics);
-
-  drawPraatPane(
-    "refCanvas",
-    data.referenceMetrics,
-    vis.alignedRefSpec,
-    vis.alignedRefPitch,
-    vis.alignedRefF1,
-    vis.alignedRefF2,
-    vis.alignedRefF3,
-    false
+    "document.addEventListener(\"DOMContentLoaded\", function () {" +
+    "  document.getElementById(\"startBtn\").addEventListener(\"click\", startWordRecording);" +
+    "  document.getElementById(\"stopBtn\").addEventListener(\"click\", stopWordRecording);" +
+    "  document.getElementById(\"playRefFullBtn\").addEventListener(\"click\", function () { playEl(\"refAudio\"); });" +
+    "  document.getElementById(\"playUserFullBtn\").addEventListener(\"click\", function () { playEl(\"userAudio\"); });" +
+    "  document.getElementById(\"playRefSegBtn\").addEventListener(\"click\", function () { playSelectedSegment(\"ref\"); });" +
+    "  document.getElementById(\"playUserSegBtn\").addEventListener(\"click\", function () { playSelectedSegment(\"user\"); });" +
+    "  document.getElementById(\"clearSegBtn\").addEventListener(\"click\", clearPhonemeSelection);" +
+    "  document.querySelectorAll(\"#sampleChips .chip\").forEach(function (chip) {" +
+    "    chip.addEventListener(\"click\", function () { document.getElementById(\"wordInput\").value = chip.dataset.word || \"\"; });" +
+    "  });" +
+    "});" +
+    "</script>" +
+    "</body>" +
+    "</html>"
   );
-
-  drawPraatPane(
-    "userCanvas",
-    data.userMetrics,
-    vis.alignedUserSpec,
-    vis.alignedUserPitch,
-    vis.alignedUserF1,
-    vis.alignedUserF2,
-    vis.alignedUserF3,
-    true
-  );
-
-  const tbody = document.getElementById("syllableTableBody");
-  const worstNum = comp.focusSyllable ? comp.focusSyllable.syllableNumber : -1;
-
-  tbody.innerHTML = comp.syllableComparisons.map(s => {
-    const isWorst = s.syllableNumber === worstNum && s.matchScore < 85;
-    return "<tr>" +
-      "<td class='" + (isWorst ? "bad-syl" : "ok-syl") + "'>" + s.label + "</td>" +
-      "<td class='" + (isWorst ? "bad-syl" : "ok-syl") + "'>" + s.matchScore + "% (" + s.status + ")</td>" +
-      "<td>" + s.userDurationMs + " ms vs " + s.refDurationMs + " ms</td>" +
-      "<td>ΔF1 " + s.f1DiffHz + " Hz / ΔF2 " + s.f2DiffHz + " Hz</td>" +
-      "<td>Δ" + s.dbDiff + " dB</td>" +
-      "<td>" + s.tip + "</td>" +
-      "</tr>";
-  }).join("");
-}
-</script>
-</body>
-</html>`);
 });
 
 module.exports = router;
